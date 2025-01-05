@@ -36,9 +36,8 @@ public class PostController {
 
     @GetMapping
     public ResponseEntity<?> getAllPosts() {
-        log.info("get all posts!!");
+        log.info("get all posts");
 
-        // GET 요청 수 기록
         meterRegistry.counter("api_post_requests", "method", "GET").increment();
 
         try {
@@ -59,7 +58,6 @@ public class PostController {
             @RequestParam(value = "images", required = false) MultipartFile imageFile) {
         log.info("post new post...");
 
-        // POST 요청 수 기록
         meterRegistry.counter("api_post_requests", "method", "POST").increment();
 
         try {
