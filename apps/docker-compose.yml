@@ -1,7 +1,7 @@
 services:
   backend:
     image: harbor.asordk.synolgoy.me/lotus-market/spring:dev
-      # image: harbor.asordk.synolgoy.me/lotus-market/spring:2.1
+      ## image: harbor.asordk.synolgoy.me/lotus-market/spring:2.1
     build:
       context: ./spring-app/
       # dockerfile: Dockerfile
