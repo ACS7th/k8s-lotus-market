@@ -23,13 +23,14 @@ public class PostService {
     }
 
     public void createPost(Post post) {
-        if (post.getTitle() == null || post.getContent() == null || post.getPurchaseDate() == null 
-            || post.getItem() == null) {
+        if (post.getTitle() == null ||
+                post.getContent() == null ||
+                post.getPurchaseDate() == null ||
+                post.getItem() == null) {
             throw new IllegalArgumentException("title, content, date, item은 필수 항목입니다.");
         }
-    
+
         try {
-            // 1. Post 저장
             Post savedPost = postRepository.save(post);
             log.info("Post saved: {}", savedPost);
         } catch (Exception e) {

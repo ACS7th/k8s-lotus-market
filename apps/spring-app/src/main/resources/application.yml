@@ -10,23 +10,10 @@ spring:
 
   data:
     mongodb:
-      uri: mongodb://${DB_USERNAME}:${DB_PASSWORD}@${DB_URL:localhost:27017}/${DB_NAME}?authSource=${DB_NAME}
+      uri: mongodb://${DB_USERNAME}:${DB_PASSWORD}@${DB_URL:localhost:27017}/lotus-db?authSource=lotus-db
 
 server:
   port: 8765
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-  metrics:
-    export:
-      prometheus:
-        enabled: true
-  endpoint:
-    prometheus:
-      enabled: true
 
 gcp:
   bucket:

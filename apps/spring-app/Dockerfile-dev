@@ -12,4 +12,3 @@ RUN ./gradlew dependencies --no-daemon
 COPY src src
 
 CMD ["./gradlew", "bootRun", "--no-daemon"]
-
