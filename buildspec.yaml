@@ -1,0 +1,44 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+  build:
+    commands:
+      - echo Build started on `date`
+      # Build next-app
+      - echo Building the Docker image for next-app...
+      - NEXT_APP_COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - NEXT_APP_IMAGE_TAG=${NEXT_APP_COMMIT_HASH:=latest}
+      - docker build -f apps/next-app/Dockerfile -t $NEXT_APP_IMAGE_NAME:$NEXT_APP_IMAGE_TAG ./apps/next-app
+      - docker tag $NEXT_APP_IMAGE_NAME:$NEXT_APP_IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$NEXT_APP_IMAGE_NAME:$NEXT_APP_IMAGE_TAG
+      
+      # Build mongo-db
+      - echo Building the Docker image for mongo-db...
+      - MONGO_DB_COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - MONGO_DB_IMAGE_TAG=${MONGO_DB_COMMIT_HASH:=latest}
+      - docker build -f apps/mongo-db/Dockerfile -t $MONGO_DB_IMAGE_NAME:$MONGO_DB_IMAGE_TAG ./apps/mongo-db
+      - docker tag $MONGO_DB_IMAGE_NAME:$MONGO_DB_IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$MONGO_DB_IMAGE_NAME:$MONGO_DB_IMAGE_TAG
+      
+      # Build spring-app
+      - echo Building the Docker image for spring-app...
+      - SPRING_APP_COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - SPRING_APP_IMAGE_TAG=${SPRING_APP_COMMIT_HASH:=latest}
+      - docker build -f apps/spring-app/Dockerfile -t $SPRING_APP_IMAGE_NAME:$SPRING_APP_IMAGE_TAG ./apps/spring-app
+      - docker tag $SPRING_APP_IMAGE_NAME:$SPRING_APP_IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$SPRING_APP_IMAGE_NAME:$SPRING_APP_IMAGE_TAG
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - echo Pushing the Docker images...
+      # Push next-app image
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$NEXT_APP_IMAGE_NAME:$NEXT_APP_IMAGE_TAG
+      # Push mongo-db image
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$MONGO_DB_IMAGE_NAME:$MONGO_DB_IMAGE_TAG
+      # Push spring-app image
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$SPRING_APP_IMAGE_NAME:$SPRING_APP_IMAGE_TAG
+
+artifacts:
+  files:
+    - '**/*'
