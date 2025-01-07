@@ -47,15 +47,15 @@ phases:
       
       # Push next-app image
       - echo "Pushing next-app image $NEXT_APP_IMAGE_NAME:$NEXT_APP_IMAGE_TAG"
-      - docker push $REPO_URI/$NEXT_APP_IMAGE_NAME:$NEXT_APP_IMAGE_TAG
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME/$NEXT_APP_IMAGE_NAME:$IMAGE_TAG
 
       # Push mongo-db image
       - echo "Pushing mongo-db image $MONGO_DB_IMAGE_NAME:$MONGO_DB_IMAGE_TAG"
-      - docker push $REPO_URI/$MONGO_DB_IMAGE_NAME:$MONGO_DB_IMAGE_TAG
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME/$MONGO_DB_IMAGE_NAME:$IMAGE_TAG
 
       # Push spring-app image
       - echo "Pushing spring-app image $SPRING_APP_IMAGE_NAME:$SPRING_APP_IMAGE_TAG"
-      - docker push $REPO_URI/$SPRING_APP_IMAGE_NAME:$SPRING_APP_IMAGE_TAG
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME/$SPRING_APP_IMAGE_NAME:$IMAGE_TAG
 
 artifacts:
   files:
