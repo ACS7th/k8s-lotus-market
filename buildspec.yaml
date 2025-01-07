@@ -6,6 +6,7 @@ env:
     NEXT_APP_IMAGE_NAME: next-app
     MONGO_DB_IMAGE_NAME: mongo-db
     SPRING_APP_IMAGE_NAME: spring-app
+    IMAGE_REPO_NAME: lotus-market
     
 phases:
   pre_build:
@@ -41,10 +42,9 @@ phases:
     commands:
       - echo Build completed on `date`
       - echo Pushing the Docker images...
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$NEXT_APP_IMAGE_NAME:$NEXT_APP_IMAGE_TAG
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$MONGO_DB_IMAGE_NAME:$MONGO_DB_IMAGE_TAG
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$SPRING_APP_IMAGE_NAME:$SPRING_APP_IMAGE_TAG
-
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$NEXT_APP_IMAGE_TAG
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$MONGO_DB_IMAGE_TAG
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$SPRING_APP_IMAGE_TAG
 artifacts:
   files:
     - '**/*'
