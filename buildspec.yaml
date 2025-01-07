@@ -1,13 +1,22 @@
 version: 0.2
 
+env:
+  variables:
+    AWS_DEFAULT_REGION: ap-northeast-2
+    NEXT_APP_IMAGE_NAME: next-app
+    MONGO_DB_IMAGE_NAME: mongo-db
+    SPRING_APP_IMAGE_NAME: spring-app
+    
 phases:
   pre_build:
+    
     commands:
       - echo Logging in to Amazon ECR...
-      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username seunghun --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
   build:
     commands:
       - echo Build started on `date`
+      
       # Build next-app
       - echo Building the Docker image for next-app...
       - NEXT_APP_COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
@@ -32,11 +41,8 @@ phases:
     commands:
       - echo Build completed on `date`
       - echo Pushing the Docker images...
-      # Push next-app image
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$NEXT_APP_IMAGE_NAME:$NEXT_APP_IMAGE_TAG
-      # Push mongo-db image
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$MONGO_DB_IMAGE_NAME:$MONGO_DB_IMAGE_TAG
-      # Push spring-app image
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$SPRING_APP_IMAGE_NAME:$SPRING_APP_IMAGE_TAG
 
 artifacts:
