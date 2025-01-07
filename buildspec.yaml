@@ -13,7 +13,8 @@ phases:
   pre_build:
     commands:
       - echo Logging in to Amazon Public ECR...
-      - aws --region $AWS_DEFAULT_REGION ecr-public get-login-password | docker login --username AWS --password-stdin $REPO_URI
+      #- aws --region $AWS_DEFAULT_REGION ecr-public get-login-password | docker login --username AWS --password-stdin $REPO_URI
+      - $(aws ecr-public get-login --no-include-email --region $AWS_DEFAULT_REGION)
 
   build:
     commands:
@@ -24,21 +25,21 @@ phases:
       - NEXT_APP_COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - NEXT_APP_IMAGE_TAG=${NEXT_APP_COMMIT_HASH:=latest}
       - docker build -f apps/next-app/Dockerfile -t $NEXT_APP_IMAGE_NAME:$NEXT_APP_IMAGE_TAG ./apps/next-app
-      - docker tag $NEXT_APP_IMAGE_NAME:$NEXT_APP_IMAGE_TAG $REPO_URI/$NEXT_APP_IMAGE_NAME:$NEXT_APP_IMAGE_TAG
+      - docker tag $NEXT_APP_IMAGE_NAME:$NEXT_APP_IMAGE_TAG $REPO_URI/$NEXT_APP_IMAGE_NAME:$IMAGE_TAG
 
       # Build mongo-db
       - echo Building the Docker image for mongo-db...
       - MONGO_DB_COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - MONGO_DB_IMAGE_TAG=${MONGO_DB_COMMIT_HASH:=latest}
       - docker build -f apps/mongo-db/Dockerfile -t $MONGO_DB_IMAGE_NAME:$MONGO_DB_IMAGE_TAG ./apps/mongo-db
-      - docker tag $MONGO_DB_IMAGE_NAME:$MONGO_DB_IMAGE_TAG $REPO_URI/$MONGO_DB_IMAGE_NAME:$MONGO_DB_IMAGE_TAG
+      - docker tag $MONGO_DB_IMAGE_NAME:$MONGO_DB_IMAGE_TAG $REPO_URI/$MONGO_DB_IMAGE_NAME:$IMAGE_TAG
 
       # Build spring-app
       - echo Building the Docker image for spring-app...
       - SPRING_APP_COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - SPRING_APP_IMAGE_TAG=${SPRING_APP_COMMIT_HASH:=latest}
       - docker build -f apps/spring-app/Dockerfile -t $SPRING_APP_IMAGE_NAME:$SPRING_APP_IMAGE_TAG ./apps/spring-app
-      - docker tag $SPRING_APP_IMAGE_NAME:$SPRING_APP_IMAGE_TAG $REPO_URI/$SPRING_APP_IMAGE_NAME:$SPRING_APP_IMAGE_TAG
+      - docker tag $SPRING_APP_IMAGE_NAME:$SPRING_APP_IMAGE_TAG $REPO_URI/$SPRING_APP_IMAGE_NAME:$IMAGE_TAG
 
   post_build:
     commands:
