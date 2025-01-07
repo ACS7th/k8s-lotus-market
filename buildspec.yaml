@@ -13,8 +13,8 @@ phases:
     
     commands:
       - echo Logging in to Amazon ECR...
-      - aws ecr-public get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.public.ecr.aws/t7q9p8g1/lotus-market
-
+      #- aws ecr-public get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.public.ecr.aws/t7q9p8g1/lotus-market
+      - aws ecr-public get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin public.ecr.aws/t7q9p8g1
   build:
     commands:
       - echo Build started on `date`
