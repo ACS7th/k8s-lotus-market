@@ -7,7 +7,7 @@ env:
     MONGO_DB_IMAGE_NAME: mongo-db
     SPRING_APP_IMAGE_NAME: spring-app
     IMAGE_REPO_NAME: lotus-market
-    REPO_URI: public.ecr.aws/t7q9p8g1/lotus-market
+    REPO_URI: 061051215363.dkr.ecr.ap-northeast-2.amazonaws.com/lotus-market
 
 phases:
   pre_build:
