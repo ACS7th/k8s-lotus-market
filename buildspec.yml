@@ -14,6 +14,7 @@ phases:
     commands:
       - echo Logging in to Amazon Public ECR...
       - aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REPOSITORY_URL
+      
   build:
     commands:
       - echo Build started on `date`
@@ -22,21 +23,21 @@ phases:
       - echo Building the Docker image for next-app...
       - NEXT_APP_COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - NEXT_APP_IMAGE_TAG=${NEXT_APP_COMMIT_HASH:=latest}
-      - docker build -f apps/next-app/Dockerfile -t $NEXT_APP_IMAGE_NAME:$NEXT_APP_IMAGE_TAG ./apps/next-app
+      - docker build -f apps/next-app/Dockerfile -t $NEXT_APP_IMAGE_NAME:$NEXT_APP_IMAGE_TAG ./apps/next-app || { echo "next-app build failed"; exit 1; }
       - docker tag $NEXT_APP_IMAGE_NAME:$NEXT_APP_IMAGE_TAG $REPOSITORY_URL/$NEXT_APP_IMAGE_NAME:$NEXT_APP_IMAGE_TAG
 
       # Build mongo-db
       - echo Building the Docker image for mongo-db...
       - MONGO_DB_COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - MONGO_DB_IMAGE_TAG=${MONGO_DB_COMMIT_HASH:=latest}
-      - docker build -f apps/mongo-db/Dockerfile -t $MONGO_DB_IMAGE_NAME:$MONGO_DB_IMAGE_TAG ./apps/mongo-db
+      - docker build -f apps/mongo-db/Dockerfile -t $MONGO_DB_IMAGE_NAME:$MONGO_DB_IMAGE_TAG ./apps/mongo-db || { echo "mongo-db build failed"; exit 1; }
       - docker tag $MONGO_DB_IMAGE_NAME:$MONGO_DB_IMAGE_TAG $REPOSITORY_URL/$MONGO_DB_IMAGE_NAME:$MONGO_DB_IMAGE_TAG
 
       # Build spring-app
       - echo Building the Docker image for spring-app...
       - SPRING_APP_COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - SPRING_APP_IMAGE_TAG=${SPRING_APP_COMMIT_HASH:=latest}
-      - docker build -f apps/spring-app/Dockerfile -t $SPRING_APP_IMAGE_NAME:$SPRING_APP_IMAGE_TAG ./apps/spring-app
+      - docker build -f apps/spring-app/Dockerfile -t $SPRING_APP_IMAGE_NAME:$SPRING_APP_IMAGE_TAG ./apps/spring-app || { echo "spring-app build failed"; exit 1; }
       - docker tag $SPRING_APP_IMAGE_NAME:$SPRING_APP_IMAGE_TAG $REPOSITORY_URL/$SPRING_APP_IMAGE_NAME:$SPRING_APP_IMAGE_TAG
 
   post_build:
@@ -46,15 +47,15 @@ phases:
       
       # Push next-app image
       - echo "Pushing next-app image $NEXT_APP_IMAGE_NAME:$NEXT_APP_IMAGE_TAG"
-      - docker push $REPOSITORY_URL/$NEXT_APP_IMAGE_NAME:$NEXT_APP_IMAGE_TAG
-  
+      - docker push $REPOSITORY_URL/$NEXT_APP_IMAGE_NAME:$NEXT_APP_IMAGE_TAG || { echo "Failed to push next-app image"; exit 1; }
+
       # Push mongo-db image
       - echo "Pushing mongo-db image $MONGO_DB_IMAGE_NAME:$MONGO_DB_IMAGE_TAG"
-      - docker push $REPOSITORY_URL/$MONGO_DB_IMAGE_NAME:$MONGO_DB_IMAGE_TAG
+      - docker push $REPOSITORY_URL/$MONGO_DB_IMAGE_NAME:$MONGO_DB_IMAGE_TAG || { echo "Failed to push mongo-db image"; exit 1; }
   
       # Push spring-app image
       - echo "Pushing spring-app image $SPRING_APP_IMAGE_NAME:$SPRING_APP_IMAGE_TAG"
-      - docker push $REPOSITORY_URL/$SPRING_APP_IMAGE_NAME:$SPRING_APP_IMAGE_TAG
+      - docker push $REPOSITORY_URL/$SPRING_APP_IMAGE_NAME:$SPRING_APP_IMAGE_TAG || { echo "Failed to push spring-app image"; exit 1; }
 
 artifacts:
   files:
