@@ -38,13 +38,21 @@ phases:
       - SPRING_APP_IMAGE_TAG=${SPRING_APP_COMMIT_HASH:=latest}
       - docker build -f apps/spring-app/Dockerfile -t $SPRING_APP_IMAGE_NAME:$SPRING_APP_IMAGE_TAG ./apps/spring-app
       - docker tag $SPRING_APP_IMAGE_NAME:$SPRING_APP_IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$SPRING_APP_IMAGE_NAME:$SPRING_APP_IMAGE_TAG
-  post_build:
-    commands:
-      - echo Build completed on `date`
-      - echo Pushing the Docker images...
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$NEXT_APP_IMAGE_TAG
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$MONGO_DB_IMAGE_TAG
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$SPRING_APP_IMAGE_TAG
+post_build:
+  commands:
+    - echo Build completed on `date`
+    - echo Pushing the Docker images...
+    
+    # image push
+    - echo "Pushing next-app image $NEXT_APP_IMAGE_NAME:$NEXT_APP_IMAGE_TAG"
+    - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME/$NEXT_APP_IMAGE_NAME:$NEXT_APP_IMAGE_TAG
+
+    - echo "Pushing mongo-db image $MONGO_DB_IMAGE_NAME:$MONGO_DB_IMAGE_TAG"
+    - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME/$MONGO_DB_IMAGE_NAME:$MONGO_DB_IMAGE_TAG
+
+    - echo "Pushing spring-app image $SPRING_APP_IMAGE_NAME:$SPRING_APP_IMAGE_TAG"
+    - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME/$SPRING_APP_IMAGE_NAME:$SPRING_APP_IMAGE_TAG
+
 artifacts:
   files:
     - '**/*'
