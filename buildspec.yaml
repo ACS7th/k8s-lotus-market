@@ -13,8 +13,7 @@ phases:
   pre_build:
     commands:
       - echo Logging in to Amazon Public ECR...
-      - aws ecr-public get-login-password --region $AWS_DEFAULT_REGION > /tmp/password.txt
-      - cat /tmp/password.txt | docker login --username AWS --password-stdin $REPO_URI
+      - aws --region $AWS_DEFAULT_REGION ecr-public get-login-password | docker login --username AWS --password-stdin $REPO_URI
 
   build:
     commands:
