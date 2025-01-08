@@ -6,18 +6,18 @@ env:
     NEXT_APP_IMAGE_NAME: next-app
     SPRING_APP_IMAGE_NAME: spring-app
     MONGO_DB_IMAGE_NAME: mongo-db
-    REPOSITORY_URL1: public.ecr.aws/t7q9p8g1/lotus-maket/next
-    REPOSITORY_URL2: public.ecr.aws/t7q9p8g1/lotus-maket/spring
-    REPOSITORY_URL3: public.ecr.aws/t7q9p8g1/lotus-market/db
+    REPOSITORY_URL1: 061051215363.dkr.ecr.ap-northeast-2.amazonaws.com/lotus-market/next
+    REPOSITORY_URL2: 061051215363.dkr.ecr.ap-northeast-2.amazonaws.com/lotus-market/spring
+    REPOSITORY_URL3: 061051215363.dkr.ecr.ap-northeast-2.amazonaws.com/lotus-market/db
 
 phases:
   pre_build:
     commands:
-      - echo Logging in to Amazon Public ECR...
-      - aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REPOSITORY_URL1
-      - aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REPOSITORY_URL2
-      - aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REPOSITORY_URL3
-      
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $REPOSITORY_URL1
+      - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $REPOSITORY_URL2
+      - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $REPOSITORY_URL3
+
   build:
     commands:
       - echo Build started on date
@@ -51,18 +51,18 @@ phases:
       
       # Push next-app image
       - echo "Pushing next-app image $NEXT_APP_IMAGE_NAME:$NEXT_APP_IMAGE_TAG"
-      - docker push $REPOSITORY_URL1:$NEXT_APP_IMAGE_TAG || { echo "Failed to push next-app image"; exit 1; }
-      - docker push $REPOSITORY_URL1:latest || { echo "Failed to push next-app image"; exit 1; }
+      - docker push $REPOSITORY_URL1:$NEXT_APP_IMAGE_TAG
+      - docker push $REPOSITORY_URL1:latest
   
       # Push spring-app image
       - echo "Pushing spring-app image $SPRING_APP_IMAGE_NAME:$SPRING_APP_IMAGE_TAG"
-      - docker push $REPOSITORY_URL2:$SPRING_APP_IMAGE_TAG || { echo "Failed to push spring-app image"; exit 1; }
-      - docker push $REPOSITORY_URL2:latest || { echo "Failed to push spring-app image"; exit 1; }
+      - docker push $REPOSITORY_URL2:$SPRING_APP_IMAGE_TAG
+      - docker push $REPOSITORY_URL2:latest
 
       # Push mongo-db image
       - echo "Pushing mongo-db image $MONGO_DB_IMAGE_NAME:$MONGO_DB_IMAGE_TAG"
-      - docker push $REPOSITORY_URL3:$MONGO_DB_IMAGE_TAG || { echo "Failed to push mongo-db image"; exit 1; }
-      - docker push $REPOSITORY_URL3:latest || { echo "Failed to push mongo-db image"; exit 1; }
+      - docker push $REPOSITORY_URL3:$MONGO_DB_IMAGE_TAG
+      - docker push $REPOSITORY_URL3:latest
       
   post_build:
     commands:
