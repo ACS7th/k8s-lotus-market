@@ -1,7 +1,9 @@
+
 version: 0.2
 
 env:
   variables:
+    AWS_REGION: ap-northeast-2
     NEXT_APP_IMAGE_NAME: next-app
     SPRING_APP_IMAGE_NAME: spring-app
     MONGO_DB_IMAGE_NAME: mongo-db
@@ -44,9 +46,7 @@ phases:
       - docker build -f apps/mongo-db/Dockerfile -t $MONGO_DB_IMAGE_NAME:$MONGO_DB_IMAGE_TAG ./apps/mongo-db || { echo "mongo-db build failed"; exit 1; }
       - docker tag $MONGO_DB_IMAGE_NAME:$MONGO_DB_IMAGE_TAG $REPOSITORY_URL3:$MONGO_DB_IMAGE_TAG
       - docker tag $MONGO_DB_IMAGE_NAME:$MONGO_DB_IMAGE_TAG $REPOSITORY_URL3:latest
-      
-  post_build:
-    commands:
+
       - echo Build completed on `date`
       - echo Pushing the Docker images...
       
@@ -65,6 +65,34 @@ phases:
       - docker push $REPOSITORY_URL3:$MONGO_DB_IMAGE_TAG || { echo "Failed to push mongo-db image"; exit 1; }
       - docker push $REPOSITORY_URL3:latest || { echo "Failed to push mongo-db image"; exit 1; }
       
+  post_build:
+    commands:
+      - AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+      - AWS_ACCOUNT_ID=$AWS_ACCOUNT_ID
+      
+      # EKS Deployment
+      - curl -O https://s3.us-west-2.amazonaws.com/amazon-eks/1.27.6/2023-10-17/bin/linux/arm64/kubectl
+      - chmod +x ./kubectl
+      - mv ./kubectl /usr/local/bin/kubectl
+      - mkdir ~/.kube
+      - aws eks --region $AWS_DEFAULT_REGION update-kubeconfig --name lotus-market
+      - kubectl get pod --all-namespaces
+      
+      - echo Deploying to EKS...
+      - AWS_ECR_URI1=$REPOSITORY_URL1:latest
+      - AWS_ECR_URI2=$REPOSITORY_URL2:latest
+      - AWS_ECR_URI3=$REPOSITORY_URL3:latest
+      - DATE='date'
+      - echo Build completed on $DATE
+      - sed -i.bak 's#AWS_ECR_URI#'"$AWS_ECR_URI"'#' k8s/front-ops/front-ops-deploy.yaml
+      - sed -i.bak 's#AWS_ECR_URI#'"$AWS_ECR_URI"'#' k8s/back-ops/back-ops-deploy.yaml
+      - sed -i.bak 's#AWS_ECR_URI#'"$AWS_ECR_URI"'#' k8s/db-ops/db-ops-deploy.yaml
+      - kubectl apply -f k8s/db-ops/
+      - kubectl apply -f k8s/back-ops/
+      - kubectl apply -f k8s/front-ops/
+
 artifacts:
   files:
     - '**/*'
+
