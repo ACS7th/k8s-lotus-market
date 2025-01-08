@@ -1,4 +1,3 @@
-
 version: 0.2
 
 env:
@@ -12,6 +11,16 @@ env:
     REPOSITORY_URL3: public.ecr.aws/t7q9p8g1/lotus-market/db
 
 phases:
+  install:
+    commands:
+      - curl -o aws-iam-authenticator https://github.com/kubernetes-sigs/aws-iam-authenticator/releases/latest/download/aws-iam-authenticator-linux-amd64
+      - chmod +x aws-iam-authenticator
+      - sudo mv aws-iam-authenticator /usr/local/bin/
+      - curl -sS -o kubectl https://amazon-eks.s3-us-west-2.amazonaws.com/1.14.6/2019-08-22/bin/linux/amd64/kubectl
+      - chmod +x ./kubectl
+      - export PATH=$PWD/:$PATH
+      - sudo apt-get -y install awscli --force-reinstall --upgrade
+
   pre_build:
     commands:
       - echo Logging in to Amazon Public ECR...
@@ -19,9 +28,11 @@ phases:
       - aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REPOSITORY_URL2
       - aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REPOSITORY_URL3
       
+      - export KUBECONFIG=$HOME/.kube/config
+
   build:
     commands:
-      - echo Build started on `date`
+      - echo Build started on date
       
       # Build next-app
       - echo Building the Docker image for next-app...
@@ -47,7 +58,7 @@ phases:
       - docker tag $MONGO_DB_IMAGE_NAME:$MONGO_DB_IMAGE_TAG $REPOSITORY_URL3:$MONGO_DB_IMAGE_TAG
       - docker tag $MONGO_DB_IMAGE_NAME:$MONGO_DB_IMAGE_TAG $REPOSITORY_URL3:latest
 
-      - echo Build completed on `date`
+      - echo Build completed on date
       - echo Pushing the Docker images...
       
       # Push next-app image
@@ -67,27 +78,22 @@ phases:
       
   post_build:
     commands:
-      - AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
-      - AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
-      - AWS_ACCOUNT_ID=$AWS_ACCOUNT_ID
-      
       # EKS Deployment
-      - curl -O https://s3.us-west-2.amazonaws.com/amazon-eks/1.27.6/2023-10-17/bin/linux/arm64/kubectl
-      - chmod +x ./kubectl
-      - mv ./kubectl /usr/local/bin/kubectl
-      - mkdir ~/.kube
-      - aws eks --region $AWS_DEFAULT_REGION update-kubeconfig --name lotus-market
-      - kubectl get pod --all-namespaces
+      - CREDENTIALS=$(aws sts assume-role --role-arn $EKS_KUBECTL_ROLE_ARN --role-session-name codebuild-kubectl --duration-seconds 900)
+      - export AWS_ACCESS_KEY_ID="$(echo ${CREDENTIALS} | jq -r '.Credentials.AccessKeyId')"
+      - export AWS_SECRET_ACCESS_KEY="$(echo ${CREDENTIALS} | jq -r '.Credentials.SecretAccessKey')"
+      - export AWS_SESSION_TOKEN="$(echo ${CREDENTIALS} | jq -r '.Credentials.SessionToken')"
+      - export AWS_EXPIRATION=$(echo ${CREDENTIALS} | jq -r '.Credentials.Expiration')
       
-      - echo Deploying to EKS...
+      - aws eks update-kubeconfig --region ap-northeast-2 --name lotus-market
+      
       - AWS_ECR_URI1=$REPOSITORY_URL1:latest
       - AWS_ECR_URI2=$REPOSITORY_URL2:latest
       - AWS_ECR_URI3=$REPOSITORY_URL3:latest
-      - DATE='date'
-      - echo Build completed on $DATE
-      - sed -i.bak 's#AWS_ECR_URI#'"$AWS_ECR_URI"'#' k8s/front-ops/front-ops-deploy.yaml
-      - sed -i.bak 's#AWS_ECR_URI#'"$AWS_ECR_URI"'#' k8s/back-ops/back-ops-deploy.yaml
-      - sed -i.bak 's#AWS_ECR_URI#'"$AWS_ECR_URI"'#' k8s/db-ops/db-ops-deploy.yaml
+
+      - sed -i.bak 's@AWS_ECR_URI@'"$AWS_ECR_URI1"'#' k8s/front-ops/front-ops-deploy.yaml
+      - sed -i.bak 's@AWS_ECR_URI@'"$AWS_ECR_URI2"'#' k8s/back-ops/back-ops-deploy.yaml
+      - sed -i.bak 's@AWS_ECR_URI@'"$AWS_ECR_URI3"'#' k8s/db-ops/db-ops-deploy.yaml
       - kubectl apply -f k8s/db-ops/
       - kubectl apply -f k8s/back-ops/
       - kubectl apply -f k8s/front-ops/
@@ -95,4 +101,3 @@ phases:
 artifacts:
   files:
     - '**/*'
-

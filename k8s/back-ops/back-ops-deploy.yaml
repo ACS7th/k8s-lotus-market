@@ -15,7 +15,6 @@ spec:
       labels:
         app: back-ops
     spec:
-      priorityClassName: db-ops-priority
       volumes:
       - name: gcp-key-vol
         secret:
@@ -49,23 +48,3 @@ spec:
               name: back-db-secret
               key: MONGO_PASSWORD
 
----
-apiVersion: autoscaling/v2
-kind: HorizontalPodAutoscaler
-metadata:
-  name: back-ops-hpa
-  namespace: back-ops
-spec:
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: back-ops
-  minReplicas: 1
-  maxReplicas: 5
-  metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: 70
