@@ -71,13 +71,12 @@ phases:
       - AWS_ACCOUNT_ID=$AWS_ACCOUNT_ID
       
       # EKS Deployment
-      - curl -O https://s3.us-west-2.amazonaws.com/amazon-eks/1.27.6/2023-10-17/bin/linux/amd64/kubectl
-      - chmod +x ./kubectl
-      - mv ./kubectl /usr/local/bin/kubectl
-      - mkdir ~/.kube
-      - aws eks --region $AWS_DEFAULT_REGION update-kubeconfig --name lotus-market
+      - curl -o aws-iam-authenticator https://github.com/kubernetes-sigs/aws-iam-authenticator/releases/latest/download/aws-iam-authenticator-linux-amd64
+      - chmod +x aws-iam-authenticator
+      - sudo mv aws-iam-authenticator /usr/local/bin/
+      - aws configure
+      - aws eks update-kubeconfig --region ap-northeast-2 --name lotus-market
       
-      - echo Deploying to EKS...
       - AWS_ECR_URI1=$REPOSITORY_URL1:latest
       - AWS_ECR_URI2=$REPOSITORY_URL2:latest
       - AWS_ECR_URI3=$REPOSITORY_URL3:latest
@@ -93,4 +92,3 @@ phases:
 artifacts:
   files:
     - '**/*'
-
