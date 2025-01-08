@@ -9,14 +9,14 @@ env:
 phases:
   pre_build:
     commands:
-      - echo Logging in to Amazon Public ECR…
-      - aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REPOSITORY_URL1
-      - aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REPOSITORY_URL2
-      - aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REPOSITORY_URL3
+      - echo "Logging in to Amazon Public ECR..."
+      - "aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REPOSITORY_URL1"
+      - "aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REPOSITORY_URL2"
+      - "aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REPOSITORY_URL3"
 
   build:
     commands:
-      - echo Build started on `date`
+      - echo "Build started on $(date)"
       
       # Extract tags from docker-compose.yml
       - NEXT_APP_IMAGE_TAG=$(grep "image: dealim/lotus-market-next" docker-compose.yml | awk -F':' '{print $3}')
@@ -24,33 +24,33 @@ phases:
       - MONGO_DB_IMAGE_TAG=$(grep "image: dealim/lotus-market-mongo" docker-compose.yml | awk -F':' '{print $3}')
       
       # Build next-app
-      - echo Building the Docker image for next-app…
-      - docker build -f apps/next-app/Dockerfile -t dealim/lotus-market-next:$NEXT_APP_IMAGE_TAG ./apps/next-app || { echo "next-app build failed"; exit 1; }
-      - docker tag dealim/lotus-market-next:$NEXT_APP_IMAGE_TAG $REPOSITORY_URL1:$NEXT_APP_IMAGE_TAG
+      - echo "Building the Docker image for next-app..."
+      - "docker build -f apps/next-app/Dockerfile -t dealim/lotus-market-next:$NEXT_APP_IMAGE_TAG ./apps/next-app || { echo 'next-app build failed'; exit 1; }"
+      - "docker tag dealim/lotus-market-next:$NEXT_APP_IMAGE_TAG $REPOSITORY_URL1:$NEXT_APP_IMAGE_TAG"
 
       # Build spring-app
-      - echo Building the Docker image for spring-app…
-      - docker build -f apps/spring-app/Dockerfile -t dealim/lotus-market-spring:$SPRING_APP_IMAGE_TAG ./apps/spring-app || { echo "spring-app build failed"; exit 1; }
-      - docker tag dealim/lotus-market-spring:$SPRING_APP_IMAGE_TAG $REPOSITORY_URL2:$SPRING_APP_IMAGE_TAG
+      - echo "Building the Docker image for spring-app..."
+      - "docker build -f apps/spring-app/Dockerfile -t dealim/lotus-market-spring:$SPRING_APP_IMAGE_TAG ./apps/spring-app || { echo 'spring-app build failed'; exit 1; }"
+      - "docker tag dealim/lotus-market-spring:$SPRING_APP_IMAGE_TAG $REPOSITORY_URL2:$SPRING_APP_IMAGE_TAG"
 
       # Build mongo-db
-      - echo Building the Docker image for mongo-db…
-      - docker build -f apps/mongo-db/Dockerfile -t dealim/lotus-market-mongo:$MONGO_DB_IMAGE_TAG ./apps/mongo-db || { echo "mongo-db build failed"; exit 1; }
-      - docker tag dealim/lotus-market-mongo:$MONGO_DB_IMAGE_TAG $REPOSITORY_URL3:$MONGO_DB_IMAGE_TAG
+      - echo "Building the Docker image for mongo-db..."
+      - "docker build -f apps/mongo-db/Dockerfile -t dealim/lotus-market-mongo:$MONGO_DB_IMAGE_TAG ./apps/mongo-db || { echo 'mongo-db build failed'; exit 1; }"
+      - "docker tag dealim/lotus-market-mongo:$MONGO_DB_IMAGE_TAG $REPOSITORY_URL3:$MONGO_DB_IMAGE_TAG"
 
   post_build:
     commands:
-      - echo Build completed on `date`
-      - echo Pushing the Docker images…
+      - echo "Build completed on $(date)"
+      - echo "Pushing the Docker images..."
 
       # Push next-app image
-      - docker push $REPOSITORY_URL1:$NEXT_APP_IMAGE_TAG || { echo "Failed to push next-app image"; exit 1; }
+      - "docker push $REPOSITORY_URL1:$NEXT_APP_IMAGE_TAG || { echo 'Failed to push next-app image'; exit 1; }"
   
       # Push spring-app image
-      - docker push $REPOSITORY_URL2:$SPRING_APP_IMAGE_TAG || { echo "Failed to push spring-app image"; exit 1; }
+      - "docker push $REPOSITORY_URL2:$SPRING_APP_IMAGE_TAG || { echo 'Failed to push spring-app image'; exit 1; }"
 
       # Push mongo-db image
-      - docker push $REPOSITORY_URL3:$MONGO_DB_IMAGE_TAG || { echo "Failed to push mongo-db image"; exit 1; }
+      - "docker push $REPOSITORY_URL3:$MONGO_DB_IMAGE_TAG || { echo 'Failed to push mongo-db image'; exit 1; }"
       
 artifacts:
   files:
