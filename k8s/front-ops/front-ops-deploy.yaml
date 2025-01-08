@@ -18,9 +18,10 @@ spec:
       priorityClassName: priority-front-ops
       containers:
       - name: front-ops-container
-        image: dealim/lotus-market-next:1.5
+        image: AWS_ECR_URI1
         ports:
         - containerPort: 3000
+        imagePullPolicy: Always
         resources:
           requests:
             cpu: "1"
