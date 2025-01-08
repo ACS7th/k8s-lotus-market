@@ -16,7 +16,6 @@ spec:
       labels:
         app: db-ops
     spec:
-      priorityClassName: db-ops-priority
       volumes:
       - name: mongo-pv-storage
         persistentVolumeClaim:
@@ -28,5 +27,5 @@ spec:
         - containerPort: 27017
         imagePullPolicy: Always
         volumeMounts:
-        - name: mongo-pv-storage
-          mountPath: /data/db
+          - name: mongo-pv-storage
+            mountPath: /data/db

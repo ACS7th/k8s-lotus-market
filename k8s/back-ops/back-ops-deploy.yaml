@@ -15,7 +15,6 @@ spec:
       labels:
         app: back-ops
     spec:
-      priorityClassName: db-ops-priority
       volumes:
       - name: gcp-key-vol
         secret:
