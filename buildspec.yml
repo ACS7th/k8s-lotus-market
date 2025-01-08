@@ -24,7 +24,7 @@ phases:
       # Build next-app
       - echo Building the Docker image for next-app...
       - NEXT_APP_COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
-      - NEXT_APP_IMAGE_TAG=${NEXT_APP_COMMIT_HASH:=latest}
+      - NEXT_APP_IMAGE_TAG=${NEXT_APP_COMMIT_HASH}
       - docker build -f apps/next-app/Dockerfile -t $NEXT_APP_IMAGE_NAME:$NEXT_APP_IMAGE_TAG ./apps/next-app || { echo "next-app build failed"; exit 1; }
       - docker tag $NEXT_APP_IMAGE_NAME:$NEXT_APP_IMAGE_TAG $REPOSITORY_URL1:$NEXT_APP_IMAGE_TAG
       - docker tag $NEXT_APP_IMAGE_NAME:$NEXT_APP_IMAGE_TAG $REPOSITORY_URL1:latest
@@ -32,7 +32,7 @@ phases:
       # Build spring-app
       - echo Building the Docker image for spring-app...
       - SPRING_APP_COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
-      - SPRING_APP_IMAGE_TAG=${SPRING_APP_COMMIT_HASH:=latest}
+      - SPRING_APP_IMAGE_TAG=${SPRING_APP_COMMIT_HASH}
       - docker build -f apps/spring-app/Dockerfile -t $SPRING_APP_IMAGE_NAME:$SPRING_APP_IMAGE_TAG ./apps/spring-app || { echo "spring-app build failed"; exit 1; }
       - docker tag $SPRING_APP_IMAGE_NAME:$SPRING_APP_IMAGE_TAG $REPOSITORY_URL2:$SPRING_APP_IMAGE_TAG
       - docker tag $SPRING_APP_IMAGE_NAME:$SPRING_APP_IMAGE_TAG $REPOSITORY_URL2:latest
@@ -40,7 +40,7 @@ phases:
       # Build mongo-db
       - echo Building the Docker image for mongo-db...
       - MONGO_DB_COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
-      - MONGO_DB_IMAGE_TAG=${MONGO_DB_COMMIT_HASH:=latest}
+      - MONGO_DB_IMAGE_TAG=${MONGO_DB_COMMIT_HASH}
       - docker build -f apps/mongo-db/Dockerfile -t $MONGO_DB_IMAGE_NAME:$MONGO_DB_IMAGE_TAG ./apps/mongo-db || { echo "mongo-db build failed"; exit 1; }
       - docker tag $MONGO_DB_IMAGE_NAME:$MONGO_DB_IMAGE_TAG $REPOSITORY_URL3:$MONGO_DB_IMAGE_TAG
       - docker tag $MONGO_DB_IMAGE_NAME:$MONGO_DB_IMAGE_TAG $REPOSITORY_URL3:latest
