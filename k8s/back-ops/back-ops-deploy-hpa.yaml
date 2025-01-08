@@ -48,13 +48,7 @@ spec:
             secretKeyRef:
               name: back-db-secret
               key: MONGO_PASSWORD
-        resources:
-          requests:
-            cpu: "1"
-            memory: "3Gi"
-          limits:
-            cpu: "2"
-            memory: "6Gi"
+
 ---
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
