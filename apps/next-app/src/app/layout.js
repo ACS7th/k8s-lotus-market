@@ -12,7 +12,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="ko">
       <body>
-        <header className="header">
+        <header className="header top">
           <div className="container">
             <h1>
               <a href="/">우리동네 연근마켓</a>
