@@ -45,45 +45,45 @@ phases:
       
       # Build next-app
       - echo Building the Docker image for next-app...
-      - NEXT_APP_COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
-      - NEXT_APP_IMAGE_TAG=${NEXT_APP_COMMIT_HASH}
-      - docker build -f apps/next-app/Dockerfile -t $NEXT_APP_IMAGE_NAME:$NEXT_APP_IMAGE_TAG ./apps/next-app 
-      - docker tag $NEXT_APP_IMAGE_NAME:$NEXT_APP_IMAGE_TAG $REPOSITORY_URL1:$NEXT_APP_IMAGE_TAG
-      - docker tag $NEXT_APP_IMAGE_NAME:$NEXT_APP_IMAGE_TAG $REPOSITORY_URL1:latest
+        #- NEXT_APP_COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+        #- NEXT_APP_IMAGE_TAG=${NEXT_APP_COMMIT_HASH}
+        #- docker build -f apps/next-app/Dockerfile -t $NEXT_APP_IMAGE_NAME:$NEXT_APP_IMAGE_TAG ./apps/next-app 
+        #- docker tag $NEXT_APP_IMAGE_NAME:$NEXT_APP_IMAGE_TAG $REPOSITORY_URL1:$NEXT_APP_IMAGE_TAG
+        #- docker tag $NEXT_APP_IMAGE_NAME:$NEXT_APP_IMAGE_TAG $REPOSITORY_URL1:latest
 
       # Build spring-app
       - echo Building the Docker image for spring-app...
-      - SPRING_APP_COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
-      - SPRING_APP_IMAGE_TAG=${SPRING_APP_COMMIT_HASH}
-      - docker build -f apps/spring-app/Dockerfile -t $SPRING_APP_IMAGE_NAME:$SPRING_APP_IMAGE_TAG ./apps/spring-app 
-      - docker tag $SPRING_APP_IMAGE_NAME:$SPRING_APP_IMAGE_TAG $REPOSITORY_URL2:$SPRING_APP_IMAGE_TAG
-      - docker tag $SPRING_APP_IMAGE_NAME:$SPRING_APP_IMAGE_TAG $REPOSITORY_URL2:latest
+        #- SPRING_APP_COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+        #- SPRING_APP_IMAGE_TAG=${SPRING_APP_COMMIT_HASH}
+        #- docker build -f apps/spring-app/Dockerfile -t $SPRING_APP_IMAGE_NAME:$SPRING_APP_IMAGE_TAG ./apps/spring-app 
+        #- docker tag $SPRING_APP_IMAGE_NAME:$SPRING_APP_IMAGE_TAG $REPOSITORY_URL2:$SPRING_APP_IMAGE_TAG
+        #- docker tag $SPRING_APP_IMAGE_NAME:$SPRING_APP_IMAGE_TAG $REPOSITORY_URL2:latest
       
       # Build mongo-db
       - echo Building the Docker image for mongo-db...
-      - MONGO_DB_COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
-      - MONGO_DB_IMAGE_TAG=${MONGO_DB_COMMIT_HASH}
-      - docker build -f apps/mongo-db/Dockerfile -t $MONGO_DB_IMAGE_NAME:$MONGO_DB_IMAGE_TAG ./apps/mongo-db 
-      - docker tag $MONGO_DB_IMAGE_NAME:$MONGO_DB_IMAGE_TAG $REPOSITORY_URL3:$MONGO_DB_IMAGE_TAG
-      - docker tag $MONGO_DB_IMAGE_NAME:$MONGO_DB_IMAGE_TAG $REPOSITORY_URL3:latest
+        #- MONGO_DB_COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+        #- MONGO_DB_IMAGE_TAG=${MONGO_DB_COMMIT_HASH}
+        #- docker build -f apps/mongo-db/Dockerfile -t $MONGO_DB_IMAGE_NAME:$MONGO_DB_IMAGE_TAG ./apps/mongo-db 
+        #- docker tag $MONGO_DB_IMAGE_NAME:$MONGO_DB_IMAGE_TAG $REPOSITORY_URL3:$MONGO_DB_IMAGE_TAG
+        #- docker tag $MONGO_DB_IMAGE_NAME:$MONGO_DB_IMAGE_TAG $REPOSITORY_URL3:latest
 
       - echo Build completed on date
       - echo Pushing the Docker images...
       
       # Push next-app image
       - echo "Pushing next-app image $NEXT_APP_IMAGE_NAME:$NEXT_APP_IMAGE_TAG"
-      - docker push $REPOSITORY_URL1:$NEXT_APP_IMAGE_TAG 
-      - docker push $REPOSITORY_URL1:latest 
+        #- docker push $REPOSITORY_URL1:$NEXT_APP_IMAGE_TAG 
+        #- docker push $REPOSITORY_URL1:latest 
   
       # Push spring-app image
       - echo "Pushing spring-app image $SPRING_APP_IMAGE_NAME:$SPRING_APP_IMAGE_TAG"
-      - docker push $REPOSITORY_URL2:$SPRING_APP_IMAGE_TAG 
-      - docker push $REPOSITORY_URL2:latest
+        #- docker push $REPOSITORY_URL2:$SPRING_APP_IMAGE_TAG 
+        #- docker push $REPOSITORY_URL2:latest
 
       # Push mongo-db image
       - echo "Pushing mongo-db image $MONGO_DB_IMAGE_NAME:$MONGO_DB_IMAGE_TAG"
-      - docker push $REPOSITORY_URL3:$MONGO_DB_IMAGE_TAG 
-      - docker push $REPOSITORY_URL3:latest 
+        #- docker push $REPOSITORY_URL3:$MONGO_DB_IMAGE_TAG 
+        #- docker push $REPOSITORY_URL3:latest 
       
   post_build:
     commands:
