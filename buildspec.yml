@@ -50,14 +50,17 @@ phases:
       # Push next-app image
       - echo "Pushing next-app image $NEXT_APP_IMAGE_NAME:$NEXT_APP_IMAGE_TAG"
       - docker push $REPOSITORY_URL1:$NEXT_APP_IMAGE_TAG || { echo "Failed to push next-app image"; exit 1; }
+      - docker push $REPOSITORY_URL1:latest || { echo "Failed to push next-app image"; exit 1; }
   
       # Push spring-app image
       - echo "Pushing spring-app image $SPRING_APP_IMAGE_NAME:$SPRING_APP_IMAGE_TAG"
       - docker push $REPOSITORY_URL2:$SPRING_APP_IMAGE_TAG || { echo "Failed to push spring-app image"; exit 1; }
+      - docker push $REPOSITORY_URL2:latest || { echo "Failed to push spring-app image"; exit 1; }
 
       # Push mongo-db image
       - echo "Pushing mongo-db image $MONGO_DB_IMAGE_NAME:$MONGO_DB_IMAGE_TAG"
       - docker push $REPOSITORY_URL3:$MONGO_DB_IMAGE_TAG || { echo "Failed to push mongo-db image"; exit 1; }
+      - docker push $REPOSITORY_URL3:latest || { echo "Failed to push mongo-db image"; exit 1; }
       
 artifacts:
   files:
