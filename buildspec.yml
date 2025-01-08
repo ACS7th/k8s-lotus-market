@@ -9,7 +9,6 @@ env:
     REPOSITORY_URL1: public.ecr.aws/t7q9p8g1/lotus-maket/next
     REPOSITORY_URL2: public.ecr.aws/t7q9p8g1/lotus-maket/spring
     REPOSITORY_URL3: public.ecr.aws/t7q9p8g1/lotus-market/db
-    EKS_ROLE_ARN: arn:aws:iam::061051215363:role/AmazonEKSClusterRole
 
 phases:
   pre_build:
@@ -66,7 +65,7 @@ phases:
       - sudo mv aws-iam-authenticator /usr/local/bin/
       - echo "EKS_ROLE_ARN: $EKS_ROLE_ARN"
       - echo "Updating kubeconfig..."
-      - aws eks update-kubeconfig --region ap-northeast-2 --name lotus-market --role-arn $EKS_ROLE_ARN || { echo "Failed to update kubeconfig"; exit 1; }
+      - aws eks update-kubeconfig --region ap-northeast-2 --name lotus-market || { echo "Failed to update kubeconfig"; exit 1; }
       - echo Testing connection to EKS...
       - kubectl get nodes || { echo "Unable to connect to EKS cluster"; exit 1; }
       - echo Applying Kubernetes manifests...
