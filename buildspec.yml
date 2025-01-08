@@ -2,21 +2,21 @@ version: 0.2
 
 env:
   variables:
-    REPOSITORY_URL1: public.ecr.aws/t7q9p8g1/lotus-maket/next
-    REPOSITORY_URL2: public.ecr.aws/t7q9p8g1/lotus-maket/spring
+    REPOSITORY_URL1: public.ecr.aws/t7q9p8g1/lotus-market/next
+    REPOSITORY_URL2: public.ecr.aws/t7q9p8g1/lotus-market/spring
     REPOSITORY_URL3: public.ecr.aws/t7q9p8g1/lotus-market/db
 
 phases:
   pre_build:
     commands:
       - echo Logging in to Amazon Public ECR…
-      - aws ecr-public get-login-password —region us-east-1 | docker login —username AWS —password-stdin $REPOSITORY_URL1
-      - aws ecr-public get-login-password —region us-east-1 | docker login —username AWS —password-stdin $REPOSITORY_URL2
-      - aws ecr-public get-login-password —region us-east-1 | docker login —username AWS —password-stdin $REPOSITORY_URL3
+      - aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REPOSITORY_URL1
+      - aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REPOSITORY_URL2
+      - aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REPOSITORY_URL3
 
   build:
     commands:
-      - echo Build started on date
+      - echo Build started on `date`
       
       # Extract tags from docker-compose.yml
       - NEXT_APP_IMAGE_TAG=$(grep "image: dealim/lotus-market-next" docker-compose.yml | awk -F':' '{print $3}')
@@ -40,7 +40,7 @@ phases:
 
   post_build:
     commands:
-      - echo Build completed on date
+      - echo Build completed on `date`
       - echo Pushing the Docker images…
 
       # Push next-app image
