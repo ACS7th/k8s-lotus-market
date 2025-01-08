@@ -29,10 +29,3 @@ spec:
         volumeMounts:
         - name: mongo-pv-storage
           mountPath: /data/db
-        resources:
-          requests:
-            cpu: "2"
-            memory: "3Gi"
-          limits:
-            cpu: "2"
-            memory: "3Gi"
