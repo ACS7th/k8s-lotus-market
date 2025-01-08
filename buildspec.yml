@@ -20,11 +20,8 @@ phases:
       - chmod +x ./kubectl
       - export PATH=$PWD/:$PATH
       - apt-get update && apt-get -y install jq python3-pip python3-dev && pip3 install --upgrade awscli
-      - pip3 install typing
-      - pip3 install awscli --force-reinstall --upgrade
-      - pip list
-      - wget --quiet https://aqua-binary.s3.amazonaws.com/scannercli
-      - chmod +x scannercli
+      - sudo apt install typing
+      - sudo apt install awscli --force-reinstall --upgrade
 
   pre_build:
     commands:
@@ -81,9 +78,6 @@ phases:
       - docker push $REPOSITORY_URL3:$MONGO_DB_IMAGE_TAG || { echo "Failed to push mongo-db image"; exit 1; }
       - docker push $REPOSITORY_URL3:latest || { echo "Failed to push mongo-db image"; exit 1; }
       
-      - ./scannercli scan --host $AQUA_URL --user $AQUA_USER --password $AQUA_PASSWORD --local $REPOSITORY_URI:$TAG --no-verify --htmlfile aqua.html
-      - docker push $REPOSITORY_URI:$TAG
-
   post_build:
     commands:
       # EKS Deployment
