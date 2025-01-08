@@ -77,7 +77,6 @@ phases:
       - mv ./kubectl /usr/local/bin/kubectl
       - mkdir ~/.kube
       - aws eks --region $AWS_DEFAULT_REGION update-kubeconfig --name lotus-market
-      - kubectl get pod --all-namespaces
       
       - echo Deploying to EKS...
       - AWS_ECR_URI1=$REPOSITORY_URL1:latest
