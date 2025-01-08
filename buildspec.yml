@@ -21,7 +21,6 @@ phases:
   build:
     commands:
       - echo Build started on `date`
-      
       # Build next-app
       - echo Building the Docker image for next-app...
       - NEXT_APP_COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
@@ -29,7 +28,6 @@ phases:
       - docker build -f apps/next-app/Dockerfile -t $NEXT_APP_IMAGE_NAME:$NEXT_APP_IMAGE_TAG ./apps/next-app || { echo "next-app build failed"; exit 1; }
       - docker tag $NEXT_APP_IMAGE_NAME:$NEXT_APP_IMAGE_TAG $REPOSITORY_URL1:$NEXT_APP_IMAGE_TAG
       - docker tag $NEXT_APP_IMAGE_NAME:$NEXT_APP_IMAGE_TAG $REPOSITORY_URL1:latest
-
       # Build spring-app
       - echo Building the Docker image for spring-app...
       - SPRING_APP_COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
@@ -37,7 +35,6 @@ phases:
       - docker build -f apps/spring-app/Dockerfile -t $SPRING_APP_IMAGE_NAME:$SPRING_APP_IMAGE_TAG ./apps/spring-app || { echo "spring-app build failed"; exit 1; }
       - docker tag $SPRING_APP_IMAGE_NAME:$SPRING_APP_IMAGE_TAG $REPOSITORY_URL2:$SPRING_APP_IMAGE_TAG
       - docker tag $SPRING_APP_IMAGE_NAME:$SPRING_APP_IMAGE_TAG $REPOSITORY_URL2:latest
-      
       # Build mongo-db
       - echo Building the Docker image for mongo-db...
       - MONGO_DB_COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
@@ -45,49 +42,37 @@ phases:
       - docker build -f apps/mongo-db/Dockerfile -t $MONGO_DB_IMAGE_NAME:$MONGO_DB_IMAGE_TAG ./apps/mongo-db || { echo "mongo-db build failed"; exit 1; }
       - docker tag $MONGO_DB_IMAGE_NAME:$MONGO_DB_IMAGE_TAG $REPOSITORY_URL3:$MONGO_DB_IMAGE_TAG
       - docker tag $MONGO_DB_IMAGE_NAME:$MONGO_DB_IMAGE_TAG $REPOSITORY_URL3:latest
-
       - echo Build completed on `date`
       - echo Pushing the Docker images...
-      
       # Push next-app image
       - echo "Pushing next-app image $NEXT_APP_IMAGE_NAME:$NEXT_APP_IMAGE_TAG"
-      - docker push $REPOSITORY_URL1:$NEXT_APP_IMAGE_TAG || { echo "Failed to push next-app image"; exit 1; }
-      - docker push $REPOSITORY_URL1:latest || { echo "Failed to push next-app image"; exit 1; }
-  
+      - docker push $REPOSITORY_URL1:$NEXT_APP_IMAGE_TAG 
+      - docker push $REPOSITORY_URL1:latest
       # Push spring-app image
       - echo "Pushing spring-app image $SPRING_APP_IMAGE_NAME:$SPRING_APP_IMAGE_TAG"
-      - docker push $REPOSITORY_URL2:$SPRING_APP_IMAGE_TAG || { echo "Failed to push spring-app image"; exit 1; }
-      - docker push $REPOSITORY_URL2:latest || { echo "Failed to push spring-app image"; exit 1; }
-
+      - docker push $REPOSITORY_URL2:$SPRING_APP_IMAGE_TAG 
+      - docker push $REPOSITORY_URL2:latest
       # Push mongo-db image
       - echo "Pushing mongo-db image $MONGO_DB_IMAGE_NAME:$MONGO_DB_IMAGE_TAG"
-      - docker push $REPOSITORY_URL3:$MONGO_DB_IMAGE_TAG || { echo "Failed to push mongo-db image"; exit 1; }
-      - docker push $REPOSITORY_URL3:latest || { echo "Failed to push mongo-db image"; exit 1; }
-      
+      - docker push $REPOSITORY_URL3:$MONGO_DB_IMAGE_TAG 
+      - docker push $REPOSITORY_URL3:latest 
+
   post_build:
     commands:
-      - AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
-      - AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
-      - AWS_ACCOUNT_ID=$AWS_ACCOUNT_ID
-      
-      # EKS Deployment
+      - echo Setting up EKS kubeconfig...
       - curl -o aws-iam-authenticator https://github.com/kubernetes-sigs/aws-iam-authenticator/releases/latest/download/aws-iam-authenticator-linux-amd64
       - chmod +x aws-iam-authenticator
       - sudo mv aws-iam-authenticator /usr/local/bin/
-      - aws eks update-kubeconfig --region ap-northeast-2 --name lotus-market
-      
-      - AWS_ECR_URI1=$REPOSITORY_URL1:latest
-      - AWS_ECR_URI2=$REPOSITORY_URL2:latest
-      - AWS_ECR_URI3=$REPOSITORY_URL3:latest
-      - DATE='date'
-      - echo Build completed on $DATE
-      - sed -i.bak 's#AWS_ECR_URI#'"$AWS_ECR_URI"'#' k8s/front-ops/front-ops-deploy.yaml
-      - sed -i.bak 's#AWS_ECR_URI#'"$AWS_ECR_URI"'#' k8s/back-ops/back-ops-deploy.yaml
-      - sed -i.bak 's#AWS_ECR_URI#'"$AWS_ECR_URI"'#' k8s/db-ops/db-ops-deploy.yaml
+      - aws eks update-kubeconfig --region ap-northeast-2 --name lotus-market --role-arn $EKS_ROLE_ARN || { echo "Failed to update kubeconfig"; exit 1; }
+      - echo Testing connection to EKS...
+      - kubectl get nodes || { echo "Unable to connect to EKS cluster"; exit 1; }
+      - echo Applying Kubernetes manifests...
       - kubectl apply -f k8s/db-ops/
       - kubectl apply -f k8s/back-ops/
       - kubectl apply -f k8s/front-ops/
+      - echo Deployment complete.
 
 artifacts:
   files:
     - '**/*'
+
