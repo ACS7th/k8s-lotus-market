@@ -19,9 +19,9 @@ phases:
       - curl -sS -o kubectl https://amazon-eks.s3-us-west-2.amazonaws.com/1.14.6/2019-08-22/bin/linux/amd64/kubectl
       - chmod +x ./kubectl
       - export PATH=$PWD/:$PATH
-      - apt-get update && apt-get -y install jq python3-pip python3-dev && pip3 install --upgrade awscli
-      - sudo apt install typing
-      - sudo apt install awscli --force-reinstall --upgrade
+      - apt-get update && apt-get -y install jq && sudo apt-get -y install --upgrade awscli
+      - sudo apt-get -y install typing
+      - sudo apt-get -y install awscli --force-reinstall --upgrade
 
   pre_build:
     commands:
