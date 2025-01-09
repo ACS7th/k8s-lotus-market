@@ -5,10 +5,15 @@ metadata:
   namespace: front-ops
   labels:
     app: front-ops
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "external"
+    service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "HTTP"
+    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
 spec:
   selector:
     app: front-ops
-  type: NodePort
+  type: LoadBalancer
   ports:
   - protocol: TCP
     port: 80
