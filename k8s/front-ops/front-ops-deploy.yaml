@@ -18,7 +18,7 @@ spec:
       containers:
       - name: front-ops-container
         imagePullPolicy: Always
-        image: AWS_ECR_URI1
+        image: public.ecr.aws/t7q9p8g1/lotus-maket/next:latest
         ports:
         - containerPort: 3000
         imagePullPolicy: Always

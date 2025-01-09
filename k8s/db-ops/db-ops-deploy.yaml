@@ -22,7 +22,7 @@ spec:
           claimName: db-ops-mongo-pvc
       containers:
       - name: db-ops-container
-        image: AWS_ECR_URI3
+        image: public.ecr.aws/t7q9p8g1/lotus-maket/db:latest
         ports:
         - containerPort: 27017
         imagePullPolicy: Always
