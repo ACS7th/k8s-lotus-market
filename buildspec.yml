@@ -13,19 +13,9 @@ env:
 phases:
   install:
     commands:
-      
+      - echo "${DOCKERHUB_PASSWORD}" | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin
   pre_build:
     commands:
-
-      - echo ENV Values
-      - echo ---------------------------------
-      - echo $AWS_DEFAULT_REGION
-      - echo $AWS_ACCOUNT_ID
-      - echo $IMAGE_REPO_NAME
-      - echo $IMAGE_TAG
-      - echo $CODEBUILD_BUILD_NUMBER
-      - echo ---------------------------------
-      
       - echo Logging in to Amazon Public ECR...
       - aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REPOSITORY_URL1
       - aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REPOSITORY_URL2
@@ -86,14 +76,23 @@ phases:
       - BASTION_HOST="54.180.140.42"
       - KEY_FILE="bastion.pem"
 
+      - echo "=== Update YAML files with image URIs ==="
+      - sed -i.bak 's#AWS_ECR_URI1#'"$AWS_ECR_URI1"'#' k8s/front-ops/front-ops-deploy.yaml
+      - sed -i.bak 's#AWS_ECR_URI2#'"$AWS_ECR_URI2"'#' k8s/back-ops/back-ops-deploy.yaml
+      - sed -i.bak 's#AWS_ECR_URI3#'"$AWS_ECR_URI3"'#' k8s/db-ops/db-ops-deploy.yaml
+
       - echo "=== Debug SSH connection ==="
       - ssh -o StrictHostKeyChecking=no -i $KEY_FILE ec2-user@$BASTION_HOST "echo Connected to Bastion Host"
 
-      - echo "=== Connect to Bastion Host and run commands ==="
-      - ssh -o StrictHostKeyChecking=no ec2-user@$BASTION_HOST -i $KEY_FILE "aws eks update-kubeconfig --region ap-northeast-2 --name lotus-market"
-      - ssh -o StrictHostKeyChecking=no ec2-user@$BASTION_HOST -i $KEY_FILE "kubectl apply -f /home/ec2-user/k8s-lotus-market/k8s/db-ops/"
-      - ssh -o StrictHostKeyChecking=no ec2-user@$BASTION_HOST -i $KEY_FILE "kubectl apply -f /home/ec2-user/k8s-lotus-market/k8s/back-ops/"
-      - ssh -o StrictHostKeyChecking=no ec2-user@$BASTION_HOST -i $KEY_FILE "kubectl apply -f /home/ec2-user/k8s-lotus-market/k8s/front-ops/"
+      - echo "=== Transfer updated YAML files to Bastion Host ==="
+      - scp -o StrictHostKeyChecking=no -i $KEY_FILE k8s/front-ops/front-ops-deploy.yaml ec2-user@$BASTION_HOST:/home/ec2-user/k8s-lotus-market/k8s/front-ops/front-ops-deploy.yaml
+      - scp -o StrictHostKeyChecking=no -i $KEY_FILE k8s/back-ops/back-ops-deploy.yaml ec2-user@$BASTION_HOST:/home/ec2-user/k8s-lotus-market/k8s/back-ops/back-ops-deploy.yaml
+      - scp -o StrictHostKeyChecking=no -i $KEY_FILE k8s/db-ops/db-ops-deploy.yaml ec2-user@$BASTION_HOST:/home/ec2-user/k8s-lotus-market/k8s/db-ops/db-ops-deploy.yaml
+
+      - echo "=== Connect to Bastion Host and apply configurations ==="
+      - ssh -o StrictHostKeyChecking=no ec2-user@$Bastion_HOST -i $KEY_FILE "kubectl apply -f /home/ec2-user/k8s-lotus-market/k8s/db-ops/db-ops-deploy.yaml"
+      - ssh -o StrictHostKeyChecking=no ec2-user@$Bastion_HOST -i $KEY_FILE "kubectl apply -f /home/ec2-user/k8s-lotus-market/k8s/back-ops/back-ops-deploy.yaml"
+      - ssh -o StrictHostKeyChecking=no ec2-user@$Bastion_HOST -i $KEY_FILE "kubectl apply -f /home/ec2-user/k8s-lotus-market/k8s/front-ops/front-ops-deploy.yaml"
 
 artifacts:
   files:
