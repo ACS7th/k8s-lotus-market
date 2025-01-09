@@ -26,7 +26,7 @@ phases:
       - echo Building the Docker image for next-app...
       - NEXT_APP_COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - NEXT_APP_IMAGE_TAG=${NEXT_APP_COMMIT_HASH}
-      - docker build -f apps/next-app/Dockerfile -t $NEXT_APP_IMAGE_NAME:$NEXT_APP_IMAGE_TAG ./apps/next-app 
+      - docker build -f apps/next-app/Dockerfile -t $NEXT_APP_IMAGE_NAME:$NEXT_APP_IMAGE_TAG ./apps/next-app
       - docker tag $NEXT_APP_IMAGE_NAME:$NEXT_APP_IMAGE_TAG $REPOSITORY_URL1:$NEXT_APP_IMAGE_TAG
       - docker tag $NEXT_APP_IMAGE_NAME:$NEXT_APP_IMAGE_TAG $REPOSITORY_URL1:latest
 
@@ -34,7 +34,7 @@ phases:
       - echo Building the Docker image for spring-app...
       - SPRING_APP_COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - SPRING_APP_IMAGE_TAG=${SPRING_APP_COMMIT_HASH}
-      - docker build -f apps/spring-app/Dockerfile -t $SPRING_APP_IMAGE_NAME:$SPRING_APP_IMAGE_TAG ./apps/spring-app 
+      - docker build -f apps/spring-app/Dockerfile -t $SPRING_APP_IMAGE_NAME:$SPRING_APP_IMAGE_TAG ./apps/spring-app
       - docker tag $SPRING_APP_IMAGE_NAME:$SPRING_APP_IMAGE_TAG $REPOSITORY_URL2:$SPRING_APP_IMAGE_TAG
       - docker tag $SPRING_APP_IMAGE_NAME:$SPRING_APP_IMAGE_TAG $REPOSITORY_URL2:latest
       - echo ---------------------------------
@@ -42,15 +42,15 @@ phases:
       - echo Pushing the Docker images...
       # Push next-app image
       - echo "Pushing next-app image $NEXT_APP_IMAGE_NAME:$NEXT_APP_IMAGE_TAG"
-      - docker push $REPOSITORY_URL1:$NEXT_APP_IMAGE_TAG 
-      - docker push $REPOSITORY_URL1:latest 
-  
+      - docker push $REPOSITORY_URL1:$NEXT_APP_IMAGE_TAG
+      - docker push $REPOSITORY_URL1:latest
+
       # Push spring-app image
       - echo "Pushing spring-app image $SPRING_APP_IMAGE_NAME:$SPRING_APP_IMAGE_TAG"
-      - docker push $REPOSITORY_URL2:$SPRING_APP_IMAGE_TAG 
+      - docker push $REPOSITORY_URL2:$SPRING_APP_IMAGE_TAG
       - docker push $REPOSITORY_URL2:latest
       - echo ---------------------------------
-    
+
   post_build:
     commands:
       - echo "=== Save Bastion SSH key ==="
@@ -70,3 +70,4 @@ phases:
 artifacts:
   files:
     - '**/*'
+
