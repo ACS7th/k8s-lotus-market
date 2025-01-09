@@ -12,6 +12,7 @@ phases:
       - echo "=== Save Bastion SSH key ==="
       # CodeBuild 환경 변수 $BASTION_PRIVATE_KEY 를 파일로 저장
       - echo "$BASTION_PRIVATE_KEY" > bastion.pem
+      - echo bastion.pem
       - chmod 400 bastion.pem
 
       # 호스트, 키 파일 경로 등을 변수로 지정 (필요시 수정)
