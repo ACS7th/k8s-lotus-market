@@ -18,7 +18,7 @@ spec:
       containers:
       - name: front-ops-container
         imagePullPolicy: Always
-        image: dealim/lotus-market-next:1.5
+        image: AWS_ECR_URI1
         ports:
         - containerPort: 3000
         imagePullPolicy: Always
