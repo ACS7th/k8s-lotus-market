@@ -97,11 +97,6 @@ phases:
       - sed -i.bak 's#AWS_ECR_URI2#'"$AWS_ECR_URI2"'#' k8s/back-ops/back-ops-deploy.yaml
       - sed -i.bak 's#AWS_ECR_URI3#'"$AWS_ECR_URI3"'#' k8s/db-ops/db-ops-deploy.yaml
 
-      - echo "=== Transfer YAML files to Bastion Host ==="
-      - scp -o StrictHostKeyChecking=no -i $KEY_FILE k8s/front-ops/front-ops-deploy.yaml ec2-user@$BASTION_HOST:/home/ec2-user/k8s-lotus-market/k8s/front-ops/front-ops-deploy.yaml
-      - scp -o StrictHostKeyChecking=no -i $KEY_FILE k8s/back-ops/back-ops-deploy.yaml ec2-user@$BASTION_HOST:/home/ec2-user/k8s-lotus-market/k8s/back-ops/back-ops-deploy.yaml
-      - scp -o StrictHostKeyChecking=no -i $KEY_FILE k8s/db-ops/db-ops-deploy.yaml ec2-user@$BASTION_HOST:/home/ec2-user/k8s-lotus-market/k8s/db-ops/db-ops-deploy.yaml
-
       - echo "=== Apply configurations on Bastion Host ==="
       - ssh -o StrictHostKeyChecking=no ec2-user@$BASTION_HOST -i $KEY_FILE "kubectl apply -f /home/ec2-user/k8s-lotus-market/k8s/db-ops/db-ops-deploy.yaml"
       - ssh -o StrictHostKeyChecking=no ec2-user@$BASTION_HOST -i $KEY_FILE "kubectl apply -f /home/ec2-user/k8s-lotus-market/k8s/back-ops/back-ops-deploy.yaml"
