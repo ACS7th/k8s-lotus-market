@@ -42,7 +42,7 @@ phases:
       - aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REPOSITORY_URL2
       - aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REPOSITORY_URL3
       
-      - export KUBECONFIG= $HOME /.kube/config 
+      - export KUBECONFIG=$HOME/.kube/config
 
   build:
     commands:
