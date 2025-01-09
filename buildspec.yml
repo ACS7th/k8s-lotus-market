@@ -93,13 +93,11 @@ phases:
       - AWS_ECR_URI1=$REPOSITORY_URL1:latest
       - AWS_ECR_URI2=$REPOSITORY_URL2:latest
       - AWS_ECR_URI3=$REPOSITORY_URL3:latest
-      - DATE=$(date '+%Y-%m-%d_%H-%M-%S')
+      - DATE=date
       - echo Build completed on $DATE
-      
       - sed -i.bak 's#AWS_ECR_URI1#'"$AWS_ECR_URI1"'#' k8s/front-ops/front-ops-deploy.yaml
       - sed -i.bak 's#AWS_ECR_URI2#'"$AWS_ECR_URI2"'#' k8s/back-ops/back-ops-deploy.yaml
       - sed -i.bak 's#AWS_ECR_URI3#'"$AWS_ECR_URI3"'#' k8s/db-ops/db-ops-deploy.yaml
-      
       - kubectl apply -f k8s/db-ops/
       - kubectl apply -f k8s/back-ops/
       - kubectl apply -f k8s/front-ops/
@@ -107,4 +105,3 @@ phases:
 artifacts:
   files:
     - '**/*'
-
