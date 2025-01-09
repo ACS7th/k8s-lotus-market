@@ -6,6 +6,9 @@ phases:
       # EKS Deployment
       - aws eks update-kubeconfig --region ap-northeast-2 --name lotus-market
 
+      - echo "Current IAM caller identity:"
+      - aws sts get-caller-identity
+
       - AWS_ECR_URI1=$REPOSITORY_URL1:latest
       - AWS_ECR_URI2=$REPOSITORY_URL2:latest
       - AWS_ECR_URI3=$REPOSITORY_URL3:latest
@@ -17,8 +20,6 @@ phases:
       - kubectl apply -f k8s/db-ops/
       - kubectl apply -f k8s/back-ops/
       - kubectl apply -f k8s/front-ops/
-      - echo "Current IAM caller identity:"
-      - aws sts get-caller-identity
 
 artifacts:
   files:
