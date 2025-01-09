@@ -30,6 +30,8 @@ phases:
   build:
     commands:
       - echo Build started on date
+      - nohup /usr/local/bin/dockerd --host=unix:///var/run/docker.sock --host=tcp://127.0.0.1:2375 --storage-driver=overlay2 &
+      - timeout 15 sh -c "until docker info; do echo .;
 
       # Build next-app
       - echo Building the Docker image for next-app...
@@ -73,7 +75,7 @@ phases:
       - docker push $REPOSITORY_URL3:$MONGO_DB_IMAGE_TAG
       - docker push $REPOSITORY_URL3:latest
 
-post_build:
+image_deploy:
   commands:
     - echo "=== Save Bastion SSH key ==="
     - echo "$BASTION_PRIVATE_KEY" > bastion.pem
