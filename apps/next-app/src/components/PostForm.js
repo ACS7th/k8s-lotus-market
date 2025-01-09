@@ -48,7 +48,7 @@ export default function PostForm() {
         <form onSubmit={handleSubmit} encType="multipart/form-data">
             <Container
                 header={
-                    <Header variant="h1">중고 물품 등록</Header>
+                    <Header variant="h2">중고 물품 등록</Header>
                 }
             >
                 <SpaceBetween size="s">
