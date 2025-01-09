@@ -88,6 +88,7 @@ phases:
   post_build:
     commands:
       # EKS Deployment
+      - echo EKS login...
       - aws eks update-kubeconfig --region ap-northeast-2 --name lotus-market
       
       - AWS_ECR_URI1=$REPOSITORY_URL1:latest
