@@ -65,7 +65,7 @@ phases:
       - ssh -o StrictHostKeyChecking=no -i $KEY_FILE ec2-user@$BASTION_HOST "echo Connected to Bastion Host"
 
       - echo "=== Connect to Bastion Host and apply configurations ==="
-      - ssh -o StrictHostKeyChecking=no ec2-user@$Bastion_HOST -i $KEY_FILE "kubectl rollout undo deploy front-ops -n front-ops --to-revision=8"
+      - ssh -o StrictHostKeyChecking=no ec2-user@$Bastion_HOST -i $KEY_FILE "kubectl rollout undo deployments front-ops -n front-ops --to-revision=8"
 
 artifacts:
   files:
