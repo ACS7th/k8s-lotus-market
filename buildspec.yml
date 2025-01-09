@@ -9,20 +9,14 @@ env:
     REPOSITORY_URL1: public.ecr.aws/t7q9p8g1/lotus-maket/next
     REPOSITORY_URL2: public.ecr.aws/t7q9p8g1/lotus-maket/spring
     REPOSITORY_URL3: public.ecr.aws/t7q9p8g1/lotus-market/db
+    BASTION_HOST: your.bastion.host.ip
+    BASTION_USER: ec2-user
+    BASTION_SSH_KEY: /path/to/your/private-key.pem
 
 phases:
   install:
     commands:
-      - echo Install Kubectl
-      - echo ---------------------------------
-      - curl -o aws-iam-authenticator https://github.com/kubernetes-sigs/aws-iam-authenticator/releases/latest/download/aws-iam-authenticator-linux-amd64
-      - chmod +x aws-iam-authenticator
-      - sudo mv aws-iam-authenticator /usr/local/bin/
-      - mkdir ~/.kube
-      - aws sts get-caller-identity
-      - aws eks --region ap-northeast-2 update-kubeconfig --name lotus-market
-      - echo ---------------------------------
-
+      
   pre_build:
     commands:
       - echo ENV Values
@@ -42,7 +36,6 @@ phases:
   build:
     commands:
       - echo Build started on date
-      
       # Build next-app
       - echo Building the Docker image for next-app...
       - NEXT_APP_COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
@@ -66,10 +59,9 @@ phases:
       - docker build -f apps/mongo-db/Dockerfile -t $MONGO_DB_IMAGE_NAME:$MONGO_DB_IMAGE_TAG ./apps/mongo-db 
       - docker tag $MONGO_DB_IMAGE_NAME:$MONGO_DB_IMAGE_TAG $REPOSITORY_URL3:$MONGO_DB_IMAGE_TAG
       - docker tag $MONGO_DB_IMAGE_NAME:$MONGO_DB_IMAGE_TAG $REPOSITORY_URL3:latest
+      - echo ---------------------------------
 
-      - echo Build completed on date
       - echo Pushing the Docker images...
-      
       # Push next-app image
       - echo "Pushing next-app image $NEXT_APP_IMAGE_NAME:$NEXT_APP_IMAGE_TAG"
       - docker push $REPOSITORY_URL1:$NEXT_APP_IMAGE_TAG 
@@ -84,26 +76,29 @@ phases:
       - echo "Pushing mongo-db image $MONGO_DB_IMAGE_NAME:$MONGO_DB_IMAGE_TAG"
       - docker push $REPOSITORY_URL3:$MONGO_DB_IMAGE_TAG 
       - docker push $REPOSITORY_URL3:latest 
-      
+      - echo ---------------------------------
+    
   post_build:
     commands:
-      # EKS Deployment
-      #- echo EKS login...
-      #- aws eks update-kubeconfig --region ap-northeast-2 --name lotus-market
-      - aws eks update-kubeconfig --name lotus-market
+      - echo "=== Save Bastion SSH key ==="
+      - echo "$BASTION_PRIVATE_KEY" > bastion.pem
+      - chmod 400 bastion.pem
+      - ls -l bastion.pem
 
-      - AWS_ECR_URI1=$REPOSITORY_URL1:latest
-      - AWS_ECR_URI2=$REPOSITORY_URL2:latest
-      - AWS_ECR_URI3=$REPOSITORY_URL3:latest
-      - DATE=date
-      - echo Build completed on $DATE
-      - sed -i.bak 's#AWS_ECR_URI1#'"$AWS_ECR_URI1"'#' k8s/front-ops/front-ops-deploy.yaml
-      - sed -i.bak 's#AWS_ECR_URI2#'"$AWS_ECR_URI2"'#' k8s/back-ops/back-ops-deploy.yaml
-      - sed -i.bak 's#AWS_ECR_URI3#'"$AWS_ECR_URI3"'#' k8s/db-ops/db-ops-deploy.yaml
-      - kubectl apply -f k8s/db-ops/db-ops-deploy.yaml
-      - kubectl apply -f k8s/back-ops/back-ops-deploy.yaml
-      - kubectl apply -f k8s/front-ops/front-ops-deploy.yaml
+      - BASTION_HOST="54.180.140.42"
+      - KEY_FILE="bastion.pem"
+
+      - echo "=== Debug SSH connection ==="
+      - ssh -o StrictHostKeyChecking=no -i $KEY_FILE ec2-user@$BASTION_HOST "echo Connected to Bastion Host"
+
+      - echo "=== Connect to Bastion Host and run commands ==="
+      - ssh -o StrictHostKeyChecking=no ec2-user@$BASTION_HOST -i $KEY_FILE "aws eks update-kubeconfig --region ap-northeast-2 --name lotus-market"
+
+      - ssh -o StrictHostKeyChecking=no ec2-user@$BASTION_HOST -i $KEY_FILE "kubectl apply -f /home/ec2-user/k8s-lotus-market/k8s/db-ops/"
+      - ssh -o StrictHostKeyChecking=no ec2-user@$BASTION_HOST -i $KEY_FILE "kubectl apply -f /home/ec2-user/k8s-lotus-market/k8s/back-ops/"
+      - ssh -o StrictHostKeyChecking=no ec2-user@$BASTION_HOST -i $KEY_FILE "kubectl apply -f /home/ec2-user/k8s-lotus-market/k8s/front-ops/"
 
 artifacts:
   files:
     - '**/*'
+
