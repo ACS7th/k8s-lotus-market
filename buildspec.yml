@@ -22,9 +22,6 @@ phases:
       - aws sts get-caller-identity
       - aws eks --region ap-northeast-2 update-kubeconfig --name lotus-market
       - echo ---------------------------------
-      - echo EKS login...
-      - aws eks update-kubeconfig --region ap-northeast-2 --name lotus-market
-      - echo ---------------------------------
 
   pre_build:
     commands:
