@@ -23,7 +23,7 @@ spec:
         - containerPort: 3000
         imagePullPolicy: Always
         env:
-        - name: API_SERVER_URL1
+        - name: API_SERVER_URL
           valueFrom:
             configMapKeyRef:
               name: front-ops-cm
