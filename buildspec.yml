@@ -99,9 +99,9 @@ phases:
       - sed -i.bak 's#AWS_ECR_URI1#'"$AWS_ECR_URI1"'#' k8s/front-ops/front-ops-deploy.yaml
       - sed -i.bak 's#AWS_ECR_URI2#'"$AWS_ECR_URI2"'#' k8s/back-ops/back-ops-deploy.yaml
       - sed -i.bak 's#AWS_ECR_URI3#'"$AWS_ECR_URI3"'#' k8s/db-ops/db-ops-deploy.yaml
-      - kubectl apply -f k8s/db-ops/
-      - kubectl apply -f k8s/back-ops/
-      - kubectl apply -f k8s/front-ops/
+      - kubectl apply -f k8s/db-ops/db-ops-deploy.yaml
+      - kubectl apply -f k8s/back-ops/back-ops-deploy.yaml
+      - kubectl apply -f k8s/front-ops/front-ops-deploy.yaml
 
 artifacts:
   files:
