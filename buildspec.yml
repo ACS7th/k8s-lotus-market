@@ -18,9 +18,10 @@ phases:
       - sed -i.bak 's#AWS_ECR_URI#'"$AWS_ECR_URI"'#' k8s/back-ops/back-ops-deploy.yaml
       - sed -i.bak 's#AWS_ECR_URI#'"$AWS_ECR_URI"'#' k8s/db-ops/db-ops-deploy.yaml
       - echo "=== Debug network connectivity ==="
-      - nslookup <EKS_API_ENDPOINT> || true
-      - curl -kv https://<EKS_API_ENDPOINT> || true
-      - nc -vz <EKS_API_ENDPOINT_IP> 443 || true
+      - nslookup https://6BDC074A9086DFD0FEF96808053A531F.gr7.ap-northeast-2.eks.amazonaws.com || true
+      - curl -kv https://6BDC074A9086DFD0FEF96808053A531F.gr7.ap-northeast-2.eks.amazonaws.com || true
+      - nc -vz 192.168.152.251 443 || true
+      - nc -vz 192.168.136.139 443 || true
       - kubectl apply -f k8s/db-ops/
       - kubectl apply -f k8s/back-ops/
       - kubectl apply -f k8s/front-ops/
