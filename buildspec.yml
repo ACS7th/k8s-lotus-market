@@ -15,7 +15,6 @@ phases:
       - echo "Bastion key saved to bastion.pem"
       - chmod 400 bastion.pem
       - ls -l bastion.pem  # 키 파일 확인
-      - cat bastion.pem
 
       # 변수 설정
       - BASTION_HOST="54.180.140.42"
