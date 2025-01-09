@@ -36,14 +36,14 @@ services:
     ports:
       - "27017:27017"
 
-  # front:
-  #   image: dealim/lotus-market-next:1.5
-  #   build:
-  #     context: ./next-app/
-  #     dockerfile: ./Dockerfile
-  #   environment:
-  #     - API_SERVER_URL=backend:8765 
-  #   ports:
-  #     - "3000:3000"
-  #   volumes:
-  #     - ./next-app/src/:/app/src/
+  front:
+    image: dealim/lotus-market-next:1.6
+    build:
+      context: ./next-app/
+      dockerfile: ./Dockerfile
+    environment:
+      - API_SERVER_URL=backend:8765 
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./next-app/src/:/app/src/
