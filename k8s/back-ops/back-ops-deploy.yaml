@@ -24,7 +24,7 @@ spec:
             path: key.json
       containers:
       - name: back-ops-container
-        image: AWS_ECR_URI2
+        image: 
         ports:
         - containerPort: 8765
         imagePullPolicy: Always

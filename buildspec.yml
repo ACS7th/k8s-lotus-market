@@ -27,6 +27,10 @@ phases:
       - aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REPOSITORY_URL2
       - aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REPOSITORY_URL3
 
+      - echo Logging in to Docker Hub...
+      - echo $DOCKERHUB_USERNAME
+      - echo $DOCKERHUB_PASSWORD | docker login --username $DOCKERHUB_USERNAME --password-stdin
+
   build:
     commands:
       - echo Build started on date
