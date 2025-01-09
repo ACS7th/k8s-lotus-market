@@ -22,6 +22,9 @@ phases:
       - aws sts get-caller-identity
       - aws eks --region ap-northeast-2 update-kubeconfig --name lotus-market
       - echo ---------------------------------
+      - echo EKS login...
+      - aws eks update-kubeconfig --region ap-northeast-2 --name lotus-market
+      - echo ---------------------------------
 
   pre_build:
     commands:
@@ -38,6 +41,8 @@ phases:
       - aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REPOSITORY_URL1
       - aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REPOSITORY_URL2
       - aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REPOSITORY_URL3
+      
+      - export KUBECONFIG= $HOME /.kube/config 
 
   build:
     commands:
@@ -88,9 +93,18 @@ phases:
   post_build:
     commands:
       # EKS Deployment
-      - echo EKS login...
-      - aws eks update-kubeconfig --region ap-northeast-2 --name lotus-market
-      
+      #- echo EKS login...
+      #- aws eks update-kubeconfig --region ap-northeast-2 --name lotus-market
+      - echo  "Kube 구성 설정을 위한 AWS CLI 관련 환경 변수 설정"
+      - CREDENTIALS=$(aws sts assume-role --role-arn $EKS_ROLE_ARN --role-session-name eks-codebuild --duration-seconds 900)
+      - export AWS_ACCESS_KEY_ID= " $(echo ${CREDENTIALS} | jq -r '.Credentials.AccessKeyId') "
+      - export AWS_SECRET_ACCESS_KEY= "$(echo ${CREDENTIALS} | jq -r '.Credentials.SecretAccessKey') "
+      - export AWS_SESSION_TOKEN= " $(echo ${CREDENTIALS} | jq -r '.Credentials.SessionToken') "
+      - export AWS_EXPIRATION=$( echo  ${CREDENTIALS} | jq -r '.Credentials.Expiration' )
+      # kubectl을 EKS 클러스터로 업데이트              
+      - echo  "Kube Config 구성 업데이트"      
+      - aws eks update-kubeconfig --name $EKS_CLUSTERNAME 
+
       - AWS_ECR_URI1=$REPOSITORY_URL1:latest
       - AWS_ECR_URI2=$REPOSITORY_URL2:latest
       - AWS_ECR_URI3=$REPOSITORY_URL3:latest
