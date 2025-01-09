@@ -81,9 +81,9 @@ phases:
       - ssh -o StrictHostKeyChecking=no -i $KEY_FILE ec2-user@$BASTION_HOST "echo Connected to Bastion Host"
 
       - echo "=== Connect to Bastion Host and apply configurations ==="
-      - ssh -o StrictHostKeyChecking=no ec2-user@$Bastion_HOST -i $KEY_FILE "kubectl apply -f /home/ec2-user/k8s-lotus-market/k8s/db-ops/db-ops-deploy.yaml"
-      - ssh -o StrictHostKeyChecking=no ec2-user@$Bastion_HOST -i $KEY_FILE "kubectl apply -f /home/ec2-user/k8s-lotus-market/k8s/back-ops/back-ops-deploy.yaml"
-      - ssh -o StrictHostKeyChecking=no ec2-user@$Bastion_HOST -i $KEY_FILE "kubectl apply -f /home/ec2-user/k8s-lotus-market/k8s/front-ops/front-ops-deploy.yaml"
+      - ssh -o StrictHostKeyChecking=no ec2-user@$Bastion_HOST -i $KEY_FILE "kubectl apply -f /home/ec2-user/k8s-lotus-market/k8s/db-ops/"
+      - ssh -o StrictHostKeyChecking=no ec2-user@$Bastion_HOST -i $KEY_FILE "kubectl apply -f /home/ec2-user/k8s-lotus-market/k8s/back-ops/"
+      - ssh -o StrictHostKeyChecking=no ec2-user@$Bastion_HOST -i $KEY_FILE "kubectl apply -f /home/ec2-user/k8s-lotus-market/k8s/front-ops/"
 
 artifacts:
   files:

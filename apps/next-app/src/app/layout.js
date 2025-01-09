@@ -4,7 +4,7 @@ import "@cloudscape-design/global-styles/index.css"
 // import '../public/css/style.css';
 
 export const metadata = {
-  title: '우리동네 연근마켓',
+  title: '우리동네 연근마켓-v2',
   description: 'For AWS Cloud School 7th',
 };
 
