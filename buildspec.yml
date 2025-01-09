@@ -85,16 +85,15 @@ phases:
       - BASTION_HOST="54.180.140.42"
       - KEY_FILE="bastion.pem"
 
-      - echo "=== Debugging SSH connection ==="
-      - ssh -o StrictHostKeyChecking=no -i bastion.pem $BASTION_USER@$BASTION_HOST "echo Connected to Bastion Host"
+      - echo "=== Debug SSH connection ==="
+      - ssh -o StrictHostKeyChecking=no -i $KEY_FILE ec2-user@$BASTION_HOST "echo Connected to Bastion Host"
 
-      - echo "=== Connect to Bastion Host and run Kubernetes commands ==="
-      - ssh -o StrictHostKeyChecking=no -i bastion.pem $BASTION_USER@$BASTION_HOST "aws eks update-kubeconfig --region ap-northeast-2 --name lotus-market"
-      - ssh -o StrictHostKeyChecking=no -i bastion.pem $BASTION_USER@$BASTION_HOST "kubectl apply -f /home/ec2-user/k8s-lotus-market/k8s/db-ops/"
-      - ssh -o StrictHostKeyChecking=no -i bastion.pem $BASTION_USER@$BASTION_HOST "kubectl apply -f /home/ec2-user/k8s-lotus-market/k8s/back-ops/"
-      - ssh -o StrictHostKeyChecking=no -i bastion.pem $BASTION_USER@$BASTION_HOST "kubectl apply -f /home/ec2-user/k8s-lotus-market/k8s/front-ops/"
+      - echo "=== Connect to Bastion Host and run commands ==="
+      - ssh -o StrictHostKeyChecking=no ec2-user@$BASTION_HOST -i $KEY_FILE "aws eks update-kubeconfig --region ap-northeast-2 --name lotus-market"
+      - ssh -o StrictHostKeyChecking=no ec2-user@$BASTION_HOST -i $KEY_FILE "kubectl apply -f /home/ec2-user/k8s-lotus-market/k8s/db-ops/"
+      - ssh -o StrictHostKeyChecking=no ec2-user@$BASTION_HOST -i $KEY_FILE "kubectl apply -f /home/ec2-user/k8s-lotus-market/k8s/back-ops/"
+      - ssh -o StrictHostKeyChecking=no ec2-user@$BASTION_HOST -i $KEY_FILE "kubectl apply -f /home/ec2-user/k8s-lotus-market/k8s/front-ops/"
 
 artifacts:
   files:
     - '**/*'
-
