@@ -15,7 +15,7 @@ export default function RootLayout({ children }) {
         <header className="header top">
           <div className="container">
             <h1>
-              <a href="/">우리동네 연근마켓_V2</a>
+              <a href="/">우리동네 연근마켓_V3</a>
             </h1>
             <p className="text-muted">
               For AWS Cloud School 7th
