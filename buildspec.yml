@@ -9,9 +9,6 @@ env:
     REPOSITORY_URL1: public.ecr.aws/t7q9p8g1/lotus-maket/next
     REPOSITORY_URL2: public.ecr.aws/t7q9p8g1/lotus-maket/spring
     REPOSITORY_URL3: public.ecr.aws/t7q9p8g1/lotus-market/db
-    BASTION_HOST: your.bastion.host.ip
-    BASTION_USER: ec2-user
-    BASTION_SSH_KEY: /path/to/your/private-key.pem
 
 phases:
   install:
