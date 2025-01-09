@@ -4,7 +4,7 @@ import "@cloudscape-design/global-styles/index.css"
 // import '../public/css/style.css';
 
 export const metadata = {
-  title: '우리동네 연근마켓-v2',
+  title: '우리동네 연근마켓',
   description: 'For AWS Cloud School 7th',
 };
 
@@ -15,7 +15,7 @@ export default function RootLayout({ children }) {
         <header className="header top">
           <div className="container">
             <h1>
-              <a href="/">우리동네 연근마켓</a>
+              <a href="/">우리동네 연근마켓_v2</a>
             </h1>
             <p className="text-muted">
               For AWS Cloud School 7th

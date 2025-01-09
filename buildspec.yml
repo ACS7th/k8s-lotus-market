@@ -5,10 +5,8 @@ env:
     AWS_REGION: ap-northeast-2
     NEXT_APP_IMAGE_NAME: next-app
     SPRING_APP_IMAGE_NAME: spring-app
-    MONGO_DB_IMAGE_NAME: mongo-db
     REPOSITORY_URL1: public.ecr.aws/t7q9p8g1/lotus-maket/next
     REPOSITORY_URL2: public.ecr.aws/t7q9p8g1/lotus-maket/spring
-    REPOSITORY_URL3: public.ecr.aws/t7q9p8g1/lotus-market/db
 
 phases:
   install:
@@ -20,7 +18,6 @@ phases:
       - echo Logging in to Amazon Public ECR...
       - aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REPOSITORY_URL1
       - aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REPOSITORY_URL2
-      - aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REPOSITORY_URL3
 
   build:
     commands:
@@ -40,14 +37,6 @@ phases:
       - docker build -f apps/spring-app/Dockerfile -t $SPRING_APP_IMAGE_NAME:$SPRING_APP_IMAGE_TAG ./apps/spring-app 
       - docker tag $SPRING_APP_IMAGE_NAME:$SPRING_APP_IMAGE_TAG $REPOSITORY_URL2:$SPRING_APP_IMAGE_TAG
       - docker tag $SPRING_APP_IMAGE_NAME:$SPRING_APP_IMAGE_TAG $REPOSITORY_URL2:latest
-      
-      # Build mongo-db
-      - echo Building the Docker image for mongo-db...
-      - MONGO_DB_COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
-      - MONGO_DB_IMAGE_TAG=${MONGO_DB_COMMIT_HASH}
-      - docker build -f apps/mongo-db/Dockerfile -t $MONGO_DB_IMAGE_NAME:$MONGO_DB_IMAGE_TAG ./apps/mongo-db 
-      - docker tag $MONGO_DB_IMAGE_NAME:$MONGO_DB_IMAGE_TAG $REPOSITORY_URL3:$MONGO_DB_IMAGE_TAG
-      - docker tag $MONGO_DB_IMAGE_NAME:$MONGO_DB_IMAGE_TAG $REPOSITORY_URL3:latest
       - echo ---------------------------------
 
       - echo Pushing the Docker images...
@@ -60,11 +49,6 @@ phases:
       - echo "Pushing spring-app image $SPRING_APP_IMAGE_NAME:$SPRING_APP_IMAGE_TAG"
       - docker push $REPOSITORY_URL2:$SPRING_APP_IMAGE_TAG 
       - docker push $REPOSITORY_URL2:latest
-
-      # Push mongo-db image
-      - echo "Pushing mongo-db image $MONGO_DB_IMAGE_NAME:$MONGO_DB_IMAGE_TAG"
-      - docker push $REPOSITORY_URL3:$MONGO_DB_IMAGE_TAG 
-      - docker push $REPOSITORY_URL3:latest 
       - echo ---------------------------------
     
   post_build:
