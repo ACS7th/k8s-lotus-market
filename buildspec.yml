@@ -16,6 +16,9 @@ phases:
       
   pre_build:
     commands:
+      - echo Logging in to Docker Hub...
+      - echo "$DOCKER_USERNAME:$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
+
       - echo ENV Values
       - echo ---------------------------------
       - echo $AWS_DEFAULT_REGION
@@ -24,7 +27,7 @@ phases:
       - echo $IMAGE_TAG
       - echo $CODEBUILD_BUILD_NUMBER
       - echo ---------------------------------
-
+      
       - echo Logging in to Amazon Public ECR...
       - aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REPOSITORY_URL1
       - aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REPOSITORY_URL2
