@@ -17,7 +17,7 @@ phases:
   pre_build:
     commands:
       - echo Logging in to Docker Hub...
-      - echo "$DOCKER_USERNAME:$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
+      - echo "$DOCKERHUB_USERNAME:$DOCKERHUB_PASSWORD" | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
 
       - echo ENV Values
       - echo ---------------------------------
