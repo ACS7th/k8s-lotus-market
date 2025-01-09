@@ -3,26 +3,32 @@ version: 0.2
 phases:
   install:
     commands:
-      # CodeBuild 환경에 SSH 클라이언트가 없을 수도 있으므로 설치
+      - echo "=== Installing SSH client ==="
       - yum update -y
       - yum install -y openssh-clients
 
   post_build:
     commands:
       - echo "=== Save Bastion SSH key ==="
-      # CodeBuild 환경 변수 $BASTION_PRIVATE_KEY 를 파일로 저장
+      # 환경 변수에서 SSH 키 저장
       - echo "$BASTION_PRIVATE_KEY" > bastion.pem
-      - echo bastion.pem
+      - echo "Bastion key saved to bastion.pem"
       - chmod 400 bastion.pem
+      - ls -l bastion.pem  # 키 파일 확인
 
-      # 호스트, 키 파일 경로 등을 변수로 지정 (필요시 수정)
+      # 변수 설정
       - BASTION_HOST="54.180.140.42"
       - KEY_FILE="bastion.pem"
 
+      - echo "=== Debug SSH connection ==="
+      # SSH 연결 테스트
+      - ssh -o StrictHostKeyChecking=no -i $KEY_FILE ec2-user@$BASTION_HOST "echo Connected to Bastion Host"
+
       - echo "=== Connect to Bastion Host and run commands ==="
-      # 1) 베스천 호스트에서 kubeconfig 업데이트
+      # EKS Kubeconfig 업데이트
       - ssh -o StrictHostKeyChecking=no ec2-user@$BASTION_HOST -i $KEY_FILE "aws eks update-kubeconfig --region ap-northeast-2 --name lotus-market"
 
+      # Kubernetes 매니페스트 적용
       - ssh -o StrictHostKeyChecking=no ec2-user@$BASTION_HOST -i $KEY_FILE "kubectl apply -f /home/ec2-user/k8s-lotus-market/db-ops/"
       - ssh -o StrictHostKeyChecking=no ec2-user@$BASTION_HOST -i $KEY_FILE "kubectl apply -f /home/ec2-user/k8s-lotus-market/back-ops/"
       - ssh -o StrictHostKeyChecking=no ec2-user@$BASTION_HOST -i $KEY_FILE "kubectl apply -f /home/ec2-user/k8s-lotus-market/front-ops/"
