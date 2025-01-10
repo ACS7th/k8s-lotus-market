@@ -67,7 +67,7 @@ phases:
 
       - echo "=== Connect to Bastion Host and apply configurations ==="
       - ssh -o StrictHostKeyChecking=no ec2-user@$Bastion_HOST -i $KEY_FILE "kubectl set image deployment/front-ops front-ops-container=public.ecr.aws/t7q9p8g1/lotus-maket/next:latest -n front-ops"
-      #- ssh -o StrictHostKeyChecking=no ec2-user@$Bastion_HOST -i $KEY_FILE "kubectl set image deployment/front-ops front-ops-container=public.ecr.aws/t7q9p8g1/lotus-maket/next:855242f -n front-ops"
+        #- ssh -o StrictHostKeyChecking=no ec2-user@$Bastion_HOST -i $KEY_FILE "kubectl set image deployment/front-ops front-ops-container=public.ecr.aws/t7q9p8g1/lotus-maket/next:855242f -n front-ops"
 
 artifacts:
   files:
