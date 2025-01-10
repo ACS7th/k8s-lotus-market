@@ -1,0 +1,76 @@
+version: 0.2
+
+env:
+  variables:
+    AWS_REGION: ap-northeast-2
+    NEXT_APP_IMAGE_NAME: next-app
+    SPRING_APP_IMAGE_NAME: spring-app
+    REPOSITORY_URL1: public.ecr.aws/t7q9p8g1/lotus-maket/next
+    REPOSITORY_URL2: public.ecr.aws/t7q9p8g1/lotus-maket/spring
+
+phases:
+  install:
+    commands:
+      - echo "${DOCKERHUB_PASSWORD}" | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin
+
+  pre_build:
+    commands:
+      - echo Logging in to Amazon Public ECR...
+      - aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REPOSITORY_URL1
+      - aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REPOSITORY_URL2
+
+  build:
+    commands:
+      - echo Build started on date
+      # Build next-app
+      - echo Building the Docker image for next-app...
+      - NEXT_APP_COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - NEXT_APP_IMAGE_TAG=${NEXT_APP_COMMIT_HASH}
+      - docker build -f apps/next-app/Dockerfile -t $NEXT_APP_IMAGE_NAME:$NEXT_APP_IMAGE_TAG ./apps/next-app
+      - docker tag $NEXT_APP_IMAGE_NAME:$NEXT_APP_IMAGE_TAG $REPOSITORY_URL1:$NEXT_APP_IMAGE_TAG
+      - docker tag $NEXT_APP_IMAGE_NAME:$NEXT_APP_IMAGE_TAG $REPOSITORY_URL1:latest
+
+      # Build spring-app
+      - echo Building the Docker image for spring-app...
+      - SPRING_APP_COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - SPRING_APP_IMAGE_TAG=${SPRING_APP_COMMIT_HASH}
+      - docker build -f apps/spring-app/Dockerfile -t $SPRING_APP_IMAGE_NAME:$SPRING_APP_IMAGE_TAG ./apps/spring-app
+      - docker tag $SPRING_APP_IMAGE_NAME:$SPRING_APP_IMAGE_TAG $REPOSITORY_URL2:$SPRING_APP_IMAGE_TAG
+      - docker tag $SPRING_APP_IMAGE_NAME:$SPRING_APP_IMAGE_TAG $REPOSITORY_URL2:latest
+      - echo ---------------------------------
+
+      - echo Pushing the Docker images...
+      # Push next-app image
+      - echo "Pushing next-app image $NEXT_APP_IMAGE_NAME:$NEXT_APP_IMAGE_TAG"
+      - docker push $REPOSITORY_URL1:$NEXT_APP_IMAGE_TAG
+      - docker push $REPOSITORY_URL1:latest
+
+      # Push spring-app image
+      - echo "Pushing spring-app image $SPRING_APP_IMAGE_NAME:$SPRING_APP_IMAGE_TAG"
+      - docker push $REPOSITORY_URL2:$SPRING_APP_IMAGE_TAG
+      - docker push $REPOSITORY_URL2:latest
+      - echo ---------------------------------
+
+
+  post_build:
+    commands:
+      - echo "=== Save Bastion SSH key ==="
+      - echo "$BASTION_PRIVATE_KEY" > bastion.pem
+      - chmod 400 bastion.pem
+      - ls -l bastion.pem
+
+      - BASTION_HOST="54.180.140.42"
+      - KEY_FILE="bastion.pem"
+
+      - echo "=== Debug SSH connection ==="
+      - ssh -o StrictHostKeyChecking=no -i $KEY_FILE ec2-user@$BASTION_HOST "echo Connected to Bastion Host"
+
+      - echo "=== Connect to Bastion Host and apply configurations ==="
+      #- ssh -o StrictHostKeyChecking=no ec2-user@$Bastion_HOST -i $KEY_FILE "kubectl set image deployment/front-ops front-ops-container=public.ecr.aws/t7q9p8g1/lotus-maket/next:latest -n front-ops"
+      - ssh -o StrictHostKeyChecking=no ec2-user@$Bastion_HOST -i $KEY_FILE "kubectl set image deployment/back-ops back-ops-container=public.ecr.aws/t7q9p8g1/lotus-maket/spring:latest -n back-ops"
+        #- ssh -o StrictHostKeyChecking=no ec2-user@$Bastion_HOST -i $KEY_FILE "kubectl set image deployment/front-ops front-ops-container=public.ecr.aws/t7q9p8g1/lotus-maket/next:855242f -n front-ops"
+
+artifacts:
+  files:
+    - '**/*'
+

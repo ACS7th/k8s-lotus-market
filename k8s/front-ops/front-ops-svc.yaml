@@ -8,10 +8,8 @@ metadata:
 spec:
   selector:
     app: front-ops
-  type: LoadBalancer
+  type: NodePort
   ports:
   - protocol: TCP
-    port: 3000
+    port: 80
     targetPort: 3000
-status:
-  loadBalancer: {}

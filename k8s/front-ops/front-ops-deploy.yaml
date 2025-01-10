@@ -15,19 +15,13 @@ spec:
       labels:
         app: front-ops
     spec:
-      priorityClassName: priority-front-ops
       containers:
       - name: front-ops-container
-        image: dealim/lotus-market-next:1.5
+        imagePullPolicy: Always
+        image: public.ecr.aws/t7q9p8g1/lotus-maket/next:latest
         ports:
         - containerPort: 3000
-        resources:
-          requests:
-            cpu: "1"
-            memory: "2Gi"
-          limits:
-            cpu: "2"
-            memory: "3Gi"
+        imagePullPolicy: Always
         env:
         - name: API_SERVER_URL
           valueFrom:

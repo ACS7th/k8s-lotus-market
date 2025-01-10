@@ -36,7 +36,7 @@ public class PostController {
 
     @GetMapping
     public ResponseEntity<?> getAllPosts() {
-        log.info("get all posts");
+        log.info("get all posts!!!!!!!!!");
 
         meterRegistry.counter("api_post_requests", "method", "GET").increment();
 

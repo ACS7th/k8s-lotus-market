@@ -1,6 +1,6 @@
 body {
   font-family: 'Roboto', sans-serif;
-  background: #f8f9fa;
+  background: #ffffff;
 }
 
 a {
@@ -28,6 +28,10 @@ a {
 
 .header .container {
   background: none;
+}
+
+.header.top {
+  border-bottom: 2px solid #ff8000;
 }
 
 .card-body {
