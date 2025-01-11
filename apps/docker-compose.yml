@@ -1,6 +1,6 @@
 services:
   backend:
-    image: harbor.asordk.synology.me/lotus-market/spring:dev
+    image: dealim/lotus-market-spring:dev
     # image: dealim/lotus-market-spring:2.1
     build:
       context: ./spring-app/
