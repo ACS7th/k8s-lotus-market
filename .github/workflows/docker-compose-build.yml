@@ -15,8 +15,6 @@ jobs:
       # 1. Checkout repository
       - name: Checkout code
         uses: actions/checkout@v3
-        with:
-          path: apps
 
       # 2. Set up QEMU for multi-architecture builds
       - name: Set up QEMU
@@ -38,5 +36,6 @@ jobs:
       # 5. Build and push Docker Compose services for multiple architectures
       - name: Build and push images
         run: |
+          cd apps
           docker-compose build
           docker-compose push
